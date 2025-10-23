@@ -46,4 +46,10 @@ public class Disponibilidad
     {
         return horaFin;
     }
+
+    @Override
+    public String toString()
+    {
+        return dia + " " + horaInicio + "-" + horaFin;
+    }
 }

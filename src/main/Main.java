@@ -1,9 +1,10 @@
+package main;
 
+import controlador.HorarioControlador;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import vista.HorarioVista;
-import controlador.HorarioControlador;
 
 public class Main extends Application
 {
@@ -12,10 +13,10 @@ public class Main extends Application
     public void start(Stage stage)
     {
         HorarioVista vista = new HorarioVista();
-        new HorarioControlador(vista); 
+        new HorarioControlador(vista);
 
-        Scene scene = new Scene(vista.getGrid(), 800, 600);
-        stage.setTitle("Horario Seleccionable - MVC");
+        Scene scene = new Scene(vista.getRoot(), 800, 600);
+        stage.setTitle("Horario de Disponibilidad - MVC + DAO");
         stage.setScene(scene);
         stage.show();
     }

@@ -1,23 +1,20 @@
 package dao;
 
 import conexion.Conexion;
-import java.sql.Connection;
 import modelo.Disponibilidad;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.*;
 import java.util.List;
-
 
 public class DisponibilidadDAO
 {
 
-
     public static void guardarDisponibilidades(List<Disponibilidad> lista)
     {
-        String sql = "INSERT INTO disponibilidad (idProfesor, dia, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO disponibilidades (idProfesor, dia, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = Conexion.conectar(); PreparedStatement pstmt = conn.prepareStatement(sql))
+        try (Connection conn = Conexion.conectar(); PreparedStatement stmt = conn.prepareStatement(sql))
         {
 
             for (Disponibilidad d : lista)
@@ -34,7 +31,7 @@ public class DisponibilidadDAO
 
         } catch (SQLException e)
         {
-            e.printStackTrace();
+            System.err.println("Error al guardar disponibilidades: " + e.getMessage());
         }
     }
 }
