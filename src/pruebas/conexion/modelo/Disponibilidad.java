@@ -1,4 +1,4 @@
-package modelo;
+package pruebas.conexion.modelo;
 
 public class Disponibilidad
 {

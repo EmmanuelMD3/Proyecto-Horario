@@ -1,13 +1,13 @@
-package controlador;
+package pruebas.controlador;
 
-import dao.DisponibilidadDAO;
+import pruebas.dao.DisponibilidadDAO;
 import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import modelo.Disponibilidad;
-import vista.HorarioVista;
+import pruebas.conexion.modelo.Disponibilidad;
+import pruebas.vista.HorarioVista;
 
 import java.util.ArrayList;
 import java.util.List;

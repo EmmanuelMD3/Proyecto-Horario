@@ -1,10 +1,10 @@
-package main;
+package pruebas.main;
 
-import controlador.HorarioControlador;
+import pruebas.controlador.HorarioControlador;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import vista.HorarioVista;
+import pruebas.vista.HorarioVista;
 
 public class Main extends Application
 {

@@ -1,7 +1,7 @@
-package dao;
+package pruebas.dao;
 
-import conexion.Conexion;
-import modelo.Disponibilidad;
+import pruebas.conexion.Conexion;
+import pruebas.conexion.modelo.Disponibilidad;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
