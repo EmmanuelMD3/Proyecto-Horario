@@ -49,8 +49,7 @@ public class ProfesorDAOImpl implements IProfesorDAO
     {
         String sql = "UPDATE Profesores SET nombre=?, apellidoP=?, apellidoM=?, correo=?, telefono=?, horas_descarga=?, activo=? "
                 + "WHERE idProfesor=?";
-        try (PreparedStatement ps = conn.prepareStatement(sql))
-        {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, profesor.getNombre());
             ps.setString(2, profesor.getApellidoP());
             ps.setString(3, profesor.getApellidoM());
@@ -59,14 +58,13 @@ public class ProfesorDAOImpl implements IProfesorDAO
             ps.setInt(6, profesor.getHorasDescarga());
             ps.setBoolean(7, profesor.isActivo());
             ps.setInt(8, profesor.getIdProfesor());
-
             return ps.executeUpdate() > 0;
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.err.println("Error al actualizar profesor: " + e.getMessage());
             return false;
         }
     }
+
 
     @Override
     public boolean eliminarProfesor(int idProfesor)
