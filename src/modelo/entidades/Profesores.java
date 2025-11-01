@@ -1,6 +1,6 @@
 package modelo.entidades;
 
-public class Profesor
+public class Profesores
 {
 
     private int idProfesor;
@@ -12,11 +12,11 @@ public class Profesor
     private int horasDescarga;
     private boolean activo;
 
-    public Profesor()
+    public Profesores()
     {
     }
 
-    public Profesor(int idProfesor, String nombre, String apellidoP, String apellidoM, String correo, String telefono, int horasDescarga, boolean activo)
+    public Profesores(int idProfesor, String nombre, String apellidoP, String apellidoM, String correo, String telefono, int horasDescarga, boolean activo)
     {
         this.idProfesor = idProfesor;
         this.nombre = nombre;
@@ -106,5 +106,11 @@ public class Profesor
     public void setActivo(boolean activo)
     {
         this.activo = activo;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Profesor{" + "idProfesor=" + idProfesor + ", nombre='" + nombre + '\'' + ", apellidoP='" + apellidoP + '\'' + ", apellidoM='" + apellidoM + '\'' + ", correo='" + correo + '\'' + ", telefono='" + telefono + '\'' + ", horasDescarga=" + horasDescarga + ", activo=" + activo + '}';
     }
 }

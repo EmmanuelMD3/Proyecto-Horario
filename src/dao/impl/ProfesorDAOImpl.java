@@ -2,7 +2,7 @@ package dao.impl;
 
 import conexion.ConexionBD;
 import dao.interfaces.IProfesorDAO;
-import modelo.entidades.Profesor;
+import modelo.entidades.Profesores;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class ProfesorDAOImpl implements IProfesorDAO
     }
 
     @Override
-    public boolean agregarProfesor(Profesor profesor)
+    public boolean agregarProfesor(Profesores profesor)
     {
         String sql = "INSERT INTO Profesores (nombre, apellidoP, apellidoM, correo, telefono, horas_descarga, activo) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -45,7 +45,7 @@ public class ProfesorDAOImpl implements IProfesorDAO
     }
 
     @Override
-    public boolean actualizarProfesor(Profesor profesor)
+    public boolean actualizarProfesor(Profesores profesor)
     {
         String sql = "UPDATE Profesores SET nombre=?, apellidoP=?, apellidoM=?, correo=?, telefono=?, horas_descarga=?, activo=? "
                 + "WHERE idProfesor=?";
@@ -82,7 +82,7 @@ public class ProfesorDAOImpl implements IProfesorDAO
     }
 
     @Override
-    public Profesor buscarPorId(int idProfesor)
+    public Profesores buscarPorId(int idProfesor)
     {
         String sql = "SELECT * FROM Profesores WHERE idProfesor=?";
         try (PreparedStatement ps = conn.prepareStatement(sql))
@@ -91,7 +91,7 @@ public class ProfesorDAOImpl implements IProfesorDAO
             ResultSet rs = ps.executeQuery();
             if (rs.next())
             {
-                Profesor p = new Profesor();
+                Profesores p = new Profesores();
                 p.setIdProfesor(rs.getInt("idProfesor"));
                 p.setNombre(rs.getString("nombre"));
                 p.setApellidoP(rs.getString("apellidoP"));
@@ -110,15 +110,15 @@ public class ProfesorDAOImpl implements IProfesorDAO
     }
 
     @Override
-    public List<Profesor> listarProfesores()
+    public List<Profesores> listarProfesores()
     {
-        List<Profesor> lista = new ArrayList<>();
+        List<Profesores> lista = new ArrayList<>();
         String sql = "SELECT * FROM Profesores ORDER BY nombre ASC";
         try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql))
         {
             while (rs.next())
             {
-                Profesor p = new Profesor();
+                Profesores p = new Profesores();
                 p.setIdProfesor(rs.getInt("idProfesor"));
                 p.setNombre(rs.getString("nombre"));
                 p.setApellidoP(rs.getString("apellidoP"));

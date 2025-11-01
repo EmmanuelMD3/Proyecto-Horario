@@ -1,7 +1,12 @@
 package pruebas;
 
+import dao.impl.CicloDAOImpl;
 import dao.impl.ProfesorDAOImpl;
-import modelo.entidades.Profesor;
+import modelo.entidades.Ciclos;
+import modelo.entidades.Profesores;
+
+import java.sql.Date;
+import java.util.List;
 
 public class TestProfesorDAO
 {
@@ -9,16 +14,45 @@ public class TestProfesorDAO
     public static void main(String[] args)
     {
 
-        ProfesorDAOImpl dao = new ProfesorDAOImpl();
+        CicloDAOImpl dao = new CicloDAOImpl();
 
-        if(dao.eliminarProfesor(2))
+        Ciclos nuevo = new Ciclos(0, "2025-A", "par",
+                Date.valueOf("2025-01-15"), Date.valueOf("2025-06-30"));
+        dao.agregarCiclo(nuevo);
+
+        List<Ciclos> ciclos = dao.listarCiclos();
+        for (Ciclos c : ciclos)
         {
-            System.out.println("Profesor eliminado");
+            System.out.println(c);
         }
-        else
+
+        Ciclos buscado = dao.buscarPorId(1);
+        if (buscado != null)
         {
-            System.out.println("Profesor no encontrado");
+            System.out.println("Encontrado: " + buscado);
         }
+
+        if (buscado != null)
+        {
+            buscado.setNombre("2025-B");
+            dao.actualizarCiclo(buscado);
+        }
+
+//        ProfesorDAOImpl dao = new ProfesorDAOImpl();
+//
+//        List<Profesores> profesores = dao.listarProfesores();
+//
+//        if(profesores != null)
+//        {
+//            for (Profesores profesor : profesores)
+//            {
+//                System.out.println(profesor.toString());
+//            }
+//        }
+//        else
+//        {
+//            System.out.println("Profesor no encontrado");
+//        }
 
         /*ProfesorDAOImpl dao = new ProfesorDAOImpl();
 
