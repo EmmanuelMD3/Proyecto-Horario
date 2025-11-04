@@ -1,8 +1,7 @@
 package modelo.entidades;
 
-public class Profesores
+public class Profesores 
 {
-
     private int idProfesor;
     private String nombre;
     private String apellidoP;
@@ -11,11 +10,11 @@ public class Profesores
     private String telefono;
     private int horasDescarga;
     private boolean activo;
-
+    
     public Profesores()
     {
     }
-
+                            
     public Profesores(int idProfesor, String nombre, String apellidoP, String apellidoM, String correo, String telefono, int horasDescarga, boolean activo)
     {
         this.idProfesor = idProfesor;

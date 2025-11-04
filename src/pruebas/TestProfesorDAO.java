@@ -1,7 +1,7 @@
 package pruebas;
 
 import dao.impl.CicloDAOImpl;
-import dao.impl.ProfesorDAOImpl;
+import dao.impl.ProfesorDAOImpl;    
 import modelo.entidades.Ciclos;
 import modelo.entidades.Profesores;
 

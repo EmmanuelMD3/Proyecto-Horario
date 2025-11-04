@@ -12,7 +12,7 @@ public class DisponibilidadDAO
 
     public static void guardarDisponibilidades(List<Disponibilidad> lista)
     {
-        String sql = "INSERT INTO disponibilidades (idProfesor, dia, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Disponibilidades (idProfesor, dia, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = Conexion.conectar(); PreparedStatement stmt = conn.prepareStatement(sql))
         {
