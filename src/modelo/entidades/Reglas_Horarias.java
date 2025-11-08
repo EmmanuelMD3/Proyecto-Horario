@@ -1,7 +1,5 @@
 package modelo.entidades;
 
-import com.sun.media.jfxmedia.control.VideoRenderControl;
-
 public class Reglas_Horarias
 {
     int idRegla;

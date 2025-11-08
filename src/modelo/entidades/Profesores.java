@@ -1,31 +1,31 @@
 package modelo.entidades;
 
-public class Profesores 
+public class Profesores
 {
+
     private int idProfesor;
     private String nombre;
     private String apellidoP;
     private String apellidoM;
-    private String correo;
-    private String telefono;
+    private String identificador;
     private int horasDescarga;
     private boolean activo;
-    
+
     public Profesores()
     {
     }
-                            
-    public Profesores(int idProfesor, String nombre, String apellidoP, String apellidoM, String correo, String telefono, int horasDescarga, boolean activo)
+
+    public Profesores(int idProfesor, String nombre, String apellidoP, String apellidoM, String identificador, int horasDescarga, boolean activo)
     {
         this.idProfesor = idProfesor;
         this.nombre = nombre;
         this.apellidoP = apellidoP;
         this.apellidoM = apellidoM;
-        this.correo = correo;
-        this.telefono = telefono;
+        this.identificador = identificador;
         this.horasDescarga = horasDescarga;
         this.activo = activo;
     }
+
 
     public int getIdProfesor()
     {
@@ -67,26 +67,6 @@ public class Profesores
         this.apellidoM = apellidoM;
     }
 
-    public String getCorreo()
-    {
-        return correo;
-    }
-
-    public void setCorreo(String correo)
-    {
-        this.correo = correo;
-    }
-
-    public String getTelefono()
-    {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono)
-    {
-        this.telefono = telefono;
-    }
-
     public int getHorasDescarga()
     {
         return horasDescarga;
@@ -107,9 +87,25 @@ public class Profesores
         this.activo = activo;
     }
 
+    /**
+     * @return the identificador
+     */
+    public String getIdentificador()
+    {
+        return identificador;
+    }
+
+    /**
+     * @param identificador the identificador to set
+     */
+    public void setIdentificador(String identificador)
+    {
+        this.identificador = identificador;
+    }
+
     @Override
     public String toString()
     {
-        return "Profesor{" + "idProfesor=" + idProfesor + ", nombre='" + nombre + '\'' + ", apellidoP='" + apellidoP + '\'' + ", apellidoM='" + apellidoM + '\'' + ", correo='" + correo + '\'' + ", telefono='" + telefono + '\'' + ", horasDescarga=" + horasDescarga + ", activo=" + activo + '}';
+        return "Profesores{" + "idProfesor=" + idProfesor + ", nombre=" + nombre + ", apellidoP=" + apellidoP + ", apellidoM=" + apellidoM + ", identificador=" + identificador + ", horasDescarga=" + horasDescarga + ", activo=" + activo + '}';
     }
 }

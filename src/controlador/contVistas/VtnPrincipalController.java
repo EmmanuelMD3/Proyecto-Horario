@@ -1,0 +1,211 @@
+package controlador.contVistas;
+
+import dao.impl.ProfesorDAOImpl;
+import interfaz.vista.*;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import modelo.entidades.Profesores;
+import util.Validadores;
+
+import static util.Validadores.configurarCheckBoxes;
+
+/**
+ * FXML Controller class
+ *
+ * @author chemo
+ */
+public class VtnPrincipalController implements Initializable
+{
+
+    @FXML
+    private ComboBox<String> comboEstado;
+
+    @FXML
+    private TextField txtNombre;
+
+    @FXML
+    private TextField txtApellidoPaterno;
+
+    @FXML
+    private TextField txtApellidoMaterno;
+
+    @FXML
+    private TextField txtIdentificador;
+
+    @FXML
+    private CheckBox checkAsignar;
+
+    @FXML
+    private CheckBox checkNoAsignar;
+
+    @FXML
+    private TableView<Profesores> tblBuscar;
+    @FXML
+    private TableColumn<Profesores, String> colNombre;
+    @FXML
+    private TableColumn<Profesores, String> colApellidoPaterno;
+    @FXML
+    private TableColumn<Profesores, String> colApellidoMaterno;
+    @FXML
+    private TableColumn<Profesores, Integer> colHorasDescarga;
+    @FXML
+    private TableColumn<Profesores, Boolean> colActivo;
+    @FXML
+    private Tab tabProfesores;
+    @FXML
+    private TableView<Profesores> tablaProfesores;
+
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb)
+    {
+        comboEstado.getItems().addAll(
+                "Activo",
+                "Inactivo"
+        );
+        comboEstado.setValue("Seleccione una opción");
+
+
+        Validadores.aplicarFiltroSoloLetras(txtNombre);
+        Validadores.aplicarFiltroSoloLetras(txtApellidoPaterno);
+        Validadores.aplicarFiltroSoloLetras(txtApellidoMaterno);
+
+        Validadores.configurarCheckBoxes(checkAsignar, checkNoAsignar);
+
+        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        colApellidoPaterno.setCellValueFactory(new PropertyValueFactory<>("apellidoP"));
+        colApellidoMaterno.setCellValueFactory(new PropertyValueFactory<>("apellidoM"));
+        colHorasDescarga.setCellValueFactory(new PropertyValueFactory<>("horasDescarga"));
+        colActivo.setCellValueFactory(new PropertyValueFactory<>("activo"));
+
+        tabProfesores.setOnSelectionChanged(event -> {
+            if (tabProfesores.isSelected()) {
+                cargarProfesores();
+            }
+        });
+    }
+
+    @FXML
+    private void Aceptar()
+    {
+        try
+        {
+            int hrsdescarga = 0;
+            String nombre = txtNombre.getText().trim();
+            String apellidoP = txtApellidoPaterno.getText().trim();
+            String apellidoM = txtApellidoMaterno.getText().trim();
+            String identificador = txtIdentificador.getText().trim();
+            String estadotxt = comboEstado.getValue();
+
+            boolean asignar = checkAsignar.isSelected();
+            boolean noAsignar = checkNoAsignar.isSelected();
+
+            if (nombre.isEmpty() || apellidoP.isEmpty() || apellidoM.isEmpty() || identificador.isEmpty())
+            {
+                mostrarAlerta("Campos vacíos", "Por favor completa todos los campos de texto.");
+                return;
+            }
+
+            if (!Validadores.soloLetrasValidas(nombre) ||
+                    !Validadores.soloLetrasValidas(apellidoP) ||
+                    !Validadores.soloLetrasValidas(apellidoM))
+            {
+                mostrarAlerta("Formato inválido", "Los nombres y apellidos solo deben contener letras.");
+                return;
+            }
+
+            if (!identificador.matches("\\d+"))
+            {
+                mostrarAlerta("Identificador inválido", "El identificador debe contener solo números.");
+                return;
+            }
+
+            if (estadotxt == null || estadotxt.equals("Seleccione una opción"))
+            {
+                mostrarAlerta("Estado inválido", "Debes seleccionar un estado válido (Activo/Inactivo).");
+                return;
+            }
+
+            if (!asignar && !noAsignar)
+            {
+                mostrarAlerta("Selección requerida", "Debes seleccionar si el profesor se asignará o no.");
+                return;
+            }
+            if (asignar)
+            {
+                hrsdescarga = 1;
+            }
+
+
+            boolean estado = estadotxt.equals("Activo");
+
+            Profesores nuevoProfesor = new Profesores(0, nombre, apellidoP, apellidoM, identificador, hrsdescarga, estado);
+            ProfesorDAOImpl daoProfesor = new ProfesorDAOImpl();
+
+            if (daoProfesor.agregarProfesor(nuevoProfesor))
+            {
+                mostrarAlerta("Éxito", "Profesor agregado correctamente.");
+                cargarProfesores();
+                limpiarCampos();
+            }
+            else
+            {
+                mostrarAlerta("Error", "No se pudo agregar el profesor.");
+            }
+
+        } catch (Exception e)
+        {
+            mostrarAlerta("Error inesperado", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+    @FXML
+    private void Modificar()
+    {
+
+    }
+
+    @FXML
+    private void Cancelar()
+    {
+
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje)
+    {
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+    }
+
+    private void limpiarCampos()
+    {
+        txtNombre.clear();
+        txtApellidoPaterno.clear();
+        txtApellidoMaterno.clear();
+        txtIdentificador.clear();
+        //comboEstado.setValue("Seleccione una opción");
+        checkAsignar.setSelected(false);
+        checkNoAsignar.setSelected(false);
+    }
+
+    private void cargarProfesores()
+    {
+        ProfesorDAOImpl daoProfesor = new ProfesorDAOImpl();
+        ObservableList<Profesores> listaProfesores = FXCollections.observableArrayList(daoProfesor.listarProfesores());
+        tblBuscar.setItems(listaProfesores);
+    }
+
+}

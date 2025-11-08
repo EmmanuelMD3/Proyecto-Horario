@@ -18,23 +18,22 @@ public class ProfesorDAOImpl implements IProfesorDAO
 
     public ProfesorDAOImpl()
     {
-        conn = ConexionBD.conectar(); 
+        conn = ConexionBD.conectar();
     }
 
     @Override
     public boolean agregarProfesor(Profesores profesor)
     {
-        String sql = "INSERT INTO Profesores (nombre, apellidoP, apellidoM, correo, telefono, horas_descarga, activo) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Profesores (nombre, apellidoP, apellidoM, identificador, horas_descarga, activo) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql))
         {
             ps.setString(1, profesor.getNombre());
             ps.setString(2, profesor.getApellidoP());
             ps.setString(3, profesor.getApellidoM());
-            ps.setString(4, profesor.getCorreo());
-            ps.setString(5, profesor.getTelefono());
-            ps.setInt(6, profesor.getHorasDescarga());
-            ps.setBoolean(7, profesor.isActivo());
+            ps.setString(4, profesor.getIdentificador());
+            ps.setInt(5, profesor.getHorasDescarga());
+            ps.setBoolean(6, profesor.isActivo());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e)
@@ -47,19 +46,20 @@ public class ProfesorDAOImpl implements IProfesorDAO
     @Override
     public boolean actualizarProfesor(Profesores profesor)
     {
-        String sql = "UPDATE Profesores SET nombre=?, apellidoP=?, apellidoM=?, correo=?, telefono=?, horas_descarga=?, activo=? "
+        String sql = "UPDATE Profesores SET nombre=?, apellidoP=?, apellidoM=?, identificador=?, horas_descarga=?, activo=? "
                 + "WHERE idProfesor=?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conn.prepareStatement(sql))
+        {
             ps.setString(1, profesor.getNombre());
             ps.setString(2, profesor.getApellidoP());
             ps.setString(3, profesor.getApellidoM());
-            ps.setString(4, profesor.getCorreo());
-            ps.setString(5, profesor.getTelefono());
-            ps.setInt(6, profesor.getHorasDescarga());
-            ps.setBoolean(7, profesor.isActivo());
-            ps.setInt(8, profesor.getIdProfesor());
+            ps.setString(4, profesor.getIdentificador());
+            ps.setInt(5, profesor.getHorasDescarga());
+            ps.setBoolean(6, profesor.isActivo());
+            ps.setInt(7, profesor.getIdProfesor());
             return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
+        } catch (SQLException e)
+        {
             System.err.println("Error al actualizar profesor: " + e.getMessage());
             return false;
         }
@@ -96,8 +96,7 @@ public class ProfesorDAOImpl implements IProfesorDAO
                 p.setNombre(rs.getString("nombre"));
                 p.setApellidoP(rs.getString("apellidoP"));
                 p.setApellidoM(rs.getString("apellidoM"));
-                p.setCorreo(rs.getString("correo"));
-                p.setTelefono(rs.getString("telefono"));
+                p.setIdentificador(rs.getString("identificador"));
                 p.setHorasDescarga(rs.getInt("horas_descarga"));
                 p.setActivo(rs.getBoolean("activo"));
                 return p;
@@ -109,11 +108,12 @@ public class ProfesorDAOImpl implements IProfesorDAO
         return null;
     }
 
+
     @Override
     public List<Profesores> listarProfesores()
     {
         List<Profesores> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Profesores ORDER BY nombre ASC";
+        String sql = "SELECT * FROM Profesores";
         try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql))
         {
             while (rs.next())
@@ -123,8 +123,7 @@ public class ProfesorDAOImpl implements IProfesorDAO
                 p.setNombre(rs.getString("nombre"));
                 p.setApellidoP(rs.getString("apellidoP"));
                 p.setApellidoM(rs.getString("apellidoM"));
-                p.setCorreo(rs.getString("correo"));
-                p.setTelefono(rs.getString("telefono"));
+                p.setIdentificador(rs.getString("identificador"));
                 p.setHorasDescarga(rs.getInt("horas_descarga"));
                 p.setActivo(rs.getBoolean("activo"));
                 lista.add(p);
