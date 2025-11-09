@@ -14,6 +14,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import modelo.entidades.Profesores;
 import util.Validadores;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
+
 
 import static util.Validadores.configurarCheckBoxes;
 
@@ -24,28 +27,20 @@ import static util.Validadores.configurarCheckBoxes;
  */
 public class VtnPrincipalController implements Initializable
 {
-
     @FXML
     private ComboBox<String> comboEstado;
-
     @FXML
     private TextField txtNombre;
-
     @FXML
     private TextField txtApellidoPaterno;
-
     @FXML
     private TextField txtApellidoMaterno;
-
     @FXML
     private TextField txtIdentificador;
-
     @FXML
     private CheckBox checkAsignar;
-
     @FXML
     private CheckBox checkNoAsignar;
-
     @FXML
     private TableView<Profesores> tblBuscar;
     @FXML
@@ -62,6 +57,8 @@ public class VtnPrincipalController implements Initializable
     private Tab tabProfesores;
     @FXML
     private TableView<Profesores> tablaProfesores;
+    @FXML
+    private TextField txtBuscar;
 
 
     @Override
@@ -86,8 +83,10 @@ public class VtnPrincipalController implements Initializable
         colHorasDescarga.setCellValueFactory(new PropertyValueFactory<>("horasDescarga"));
         colActivo.setCellValueFactory(new PropertyValueFactory<>("activo"));
 
-        tabProfesores.setOnSelectionChanged(event -> {
-            if (tabProfesores.isSelected()) {
+        tabProfesores.setOnSelectionChanged(event ->
+        {
+            if (tabProfesores.isSelected())
+            {
                 cargarProfesores();
             }
         });
@@ -178,7 +177,7 @@ public class VtnPrincipalController implements Initializable
     @FXML
     private void Cancelar()
     {
-
+        limpiarCampos();
     }
 
     private void mostrarAlerta(String titulo, String mensaje)
@@ -205,7 +204,47 @@ public class VtnPrincipalController implements Initializable
     {
         ProfesorDAOImpl daoProfesor = new ProfesorDAOImpl();
         ObservableList<Profesores> listaProfesores = FXCollections.observableArrayList(daoProfesor.listarProfesores());
-        tblBuscar.setItems(listaProfesores);
+
+        FilteredList<Profesores> filtro = new FilteredList<>(listaProfesores, p -> true);
+
+        txtBuscar.textProperty().addListener((observable, oldValue, newValue) ->
+        {
+            filtro.setPredicate(profesor ->
+            {
+                if (newValue == null || newValue.isEmpty())
+                {
+                    return true;
+                }
+
+                String lowerCaseFilter = newValue.toLowerCase();
+
+                if (profesor.getNombre().toLowerCase().contains(lowerCaseFilter))
+                {
+                    return true;
+                }
+                else
+                    if (profesor.getApellidoP().toLowerCase().contains(lowerCaseFilter))
+                    {
+                        return true;
+                    }
+                    else
+                        if (profesor.getApellidoM().toLowerCase().contains(lowerCaseFilter))
+                        {
+                            return true;
+                        }
+                        else
+                            if (profesor.getIdentificador().toLowerCase().contains(lowerCaseFilter))
+                            {
+                                return true;
+                            }
+                return false;
+            });
+        });
+
+        SortedList<Profesores> ordenada = new SortedList<>(filtro);
+        ordenada.comparatorProperty().bind(tblBuscar.comparatorProperty());
+        tblBuscar.setItems(ordenada);
     }
+
 
 }
