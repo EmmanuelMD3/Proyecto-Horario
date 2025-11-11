@@ -1,7 +1,8 @@
 package controlador.contVistas;
 
+import controlador.contLogica.HorarioControlador;
+import controlador.contLogica.HorarioVista;
 import dao.impl.ProfesorDAOImpl;
-import interfaz.vista.*;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -12,13 +13,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import modelo.entidades.Profesores;
 import util.Validadores;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-
-
-import static util.Validadores.configurarCheckBoxes;
 
 /**
  * FXML Controller class
@@ -59,6 +58,9 @@ public class VtnPrincipalController implements Initializable
     private TableView<Profesores> tablaProfesores;
     @FXML
     private TextField txtBuscar;
+    @FXML
+    private AnchorPane panelHorario;
+    private controlador.contLogica.HorarioControlador horarioControlador;
 
 
     @Override
@@ -88,8 +90,10 @@ public class VtnPrincipalController implements Initializable
             if (tabProfesores.isSelected())
             {
                 cargarProfesores();
+                cargarVistaHorario(); // <<--- Aquí cargamos el horario
             }
         });
+
     }
 
     @FXML
@@ -167,6 +171,15 @@ public class VtnPrincipalController implements Initializable
         }
     }
 
+    @FXML
+    private void guardarDisponibilidad()
+    {
+        if (horarioControlador != null) {
+            horarioControlador.guardarSeleccionadas();
+        } else {
+            System.err.println("El controlador de horario no está inicializado.");
+        }
+    }
 
     @FXML
     private void Modificar()
@@ -244,6 +257,30 @@ public class VtnPrincipalController implements Initializable
         SortedList<Profesores> ordenada = new SortedList<>(filtro);
         ordenada.comparatorProperty().bind(tblBuscar.comparatorProperty());
         tblBuscar.setItems(ordenada);
+    }
+
+    private void cargarVistaHorario()
+    {
+        try
+        {
+            // Crear la vista y controlador del horario (usando las nuevas rutas)
+            controlador.contLogica.HorarioVista vistaHorario = new controlador.contLogica.HorarioVista();
+            horarioControlador = new controlador.contLogica.HorarioControlador(vistaHorario);
+
+            // Insertar la vista en el panel
+            panelHorario.getChildren().clear();
+            panelHorario.getChildren().add(vistaHorario.getRoot());
+
+            AnchorPane.setTopAnchor(vistaHorario.getRoot(), 0.0);
+            AnchorPane.setBottomAnchor(vistaHorario.getRoot(), 0.0);
+            AnchorPane.setLeftAnchor(vistaHorario.getRoot(), 0.0);
+            AnchorPane.setRightAnchor(vistaHorario.getRoot(), 0.0);
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+            System.err.println("Error al cargar horario: " + e.getMessage());
+        }
     }
 
 

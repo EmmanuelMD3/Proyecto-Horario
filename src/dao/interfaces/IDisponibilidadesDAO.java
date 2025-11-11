@@ -5,7 +5,7 @@
 package dao.interfaces;
 
 import java.util.List;
-import pruebas.conexion.modelo.Disponibilidad;
+import modelo.entidades.Disponibilidades;
 
 /**
  *
@@ -13,5 +13,5 @@ import pruebas.conexion.modelo.Disponibilidad;
  */
 public interface IDisponibilidadesDAO 
 {
-    boolean guardarDisponibilidades(List<Disponibilidad> lista);
+    boolean guardarDisponibilidades(List<Disponibilidades> lista);
 }

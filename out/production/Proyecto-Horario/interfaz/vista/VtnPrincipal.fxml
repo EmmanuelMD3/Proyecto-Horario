@@ -103,6 +103,8 @@
                                         <Button fx:id="btnAceptar" layoutX="903.0" layoutY="538.0" mnemonicParsing="false" onAction="#Aceptar" prefHeight="25.0" prefWidth="339.0" text="ACEPTAR" />
                                         <Button fx:id="btnModificar" layoutX="904.0" layoutY="578.0" mnemonicParsing="false" onAction="#Modificar" prefHeight="25.0" prefWidth="337.0" text="MODIFICAR" />
                                         <Button fx:id="btnCancelar" layoutX="904.0" layoutY="617.0" mnemonicParsing="false" onAction="#Cancelar" prefHeight="25.0" prefWidth="337.0" text="CANCELAR" />
+                                        <Button fx:id="btnGuardarDisponibilidad" layoutX="8.0" layoutY="730.0" mnemonicParsing="false" onAction="#guardarDisponibilidad" text="Guardar Disponibilidad" />
+                              <AnchorPane fx:id="panelHorario" layoutX="8.0" layoutY="278.0" prefHeight="445.0" prefWidth="849.0" />
                                     </children>
                                 </Pane>
                             </children>

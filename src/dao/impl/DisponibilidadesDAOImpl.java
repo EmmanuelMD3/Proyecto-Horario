@@ -9,31 +9,31 @@ import conexion.ConexionBD;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
-import pruebas.conexion.modelo.Disponibilidad;
+import modelo.entidades.Disponibilidades;
 import java.sql.*;
 
 /**
  *
  * @author chemo
  */
-public class DisponibilidadesDAO implements IDisponibilidadesDAO
+public class DisponibilidadesDAOImpl implements IDisponibilidadesDAO
 {
     private Connection conn;
 
-    public DisponibilidadesDAO()
+    public DisponibilidadesDAOImpl()
     {
         conn = ConexionBD.conectar(); 
     }
     
     @Override
-    public boolean guardarDisponibilidades(List<Disponibilidad> lista)
+    public boolean guardarDisponibilidades(List<Disponibilidades> lista)
     {
         String sql = "INSERT INTO disponibilidades (idProfesor, dia, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql))
         {
 
-            for (Disponibilidad d : lista)
+            for (Disponibilidades d : lista)
             {
                 stmt.setInt(1, d.getIdProfesor());
                 stmt.setString(2, d.getDia());

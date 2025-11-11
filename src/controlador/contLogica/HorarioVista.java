@@ -1,4 +1,4 @@
-package pruebas.vista;
+package controlador.contLogica;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -9,8 +9,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import pruebas.conexion.modelo.Disponibilidad;
-
+import modelo.entidades.Disponibilidades;
 public class HorarioVista
 {
 
@@ -58,7 +57,7 @@ public class HorarioVista
 
     private final GridPane grid = new GridPane();
     private final BorderPane root = new BorderPane();
-    private final Button btnGuardar = new Button("Guardar disponibilidad");
+    //private final Button btnGuardar = new Button("Guardar disponibilidad");
 
     public HorarioVista()
     {
@@ -67,8 +66,8 @@ public class HorarioVista
         construirEncabezados();
 
         root.setCenter(grid);
-        root.setBottom(btnGuardar);
-        BorderPane.setAlignment(btnGuardar, Pos.CENTER);
+        //root.setBottom(btnGuardar);
+        //BorderPane.setAlignment(btnGuardar, Pos.CENTER);
     }
 
     private void construirEncabezados()
@@ -99,12 +98,12 @@ public class HorarioVista
         return grid;
     }
 
-    public Button getBtnGuardar()
-    {
-        return btnGuardar;
-    }
+//    public Button getBtnGuardar()
+//    {
+//        return btnGuardar;
+//    }
 
-    public StackPane crearCeldaVisual(Disponibilidad disp)
+    public StackPane crearCeldaVisual(Disponibilidades disp)
     {
         Rectangle rect = new Rectangle(80, 30);
         rect.setFill(Color.WHITE);

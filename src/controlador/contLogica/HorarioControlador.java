@@ -1,13 +1,14 @@
-package pruebas.controlador;
+package controlador.contLogica;
 
+import dao.impl.DisponibilidadesDAOImpl;
 import pruebas.dao.DisponibilidadDAO;
 import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import pruebas.conexion.modelo.Disponibilidad;
-import pruebas.vista.HorarioVista;
+//import pruebas.conexion.modelo.Disponibilidad;
+import modelo.entidades.Disponibilidades;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +17,14 @@ public class HorarioControlador
 {
 
     private final HorarioVista vista;
-    private final List<Disponibilidad> seleccionadas = new ArrayList<>();
-    private final int idProfesor = 1; 
+    private final List<Disponibilidades> seleccionadas = new ArrayList<>();
+    private final int idProfesor = 1;
 
     public HorarioControlador(HorarioVista vista)
     {
         this.vista = vista;
         inicializarCeldas();
-        configurarBotonGuardar();
+        //configurarBotonGuardar();
     }
 
     private void inicializarCeldas()
@@ -40,7 +41,7 @@ public class HorarioControlador
             for (int col = 0; col < dias.length; col++)
             {
                 String dia = dias[col];
-                Disponibilidad disp = new Disponibilidad(idProfesor, dia, horaInicio, horaFin);
+                Disponibilidades disp = new Disponibilidades(idProfesor, dia, horaInicio, horaFin);
                 StackPane stack = vista.crearCeldaVisual(disp);
                 javafx.scene.shape.Rectangle rect = (javafx.scene.shape.Rectangle) stack.getUserData();
 
@@ -50,7 +51,8 @@ public class HorarioControlador
                     {
                         rect.setFill(Color.web("#A5D6A7"));
                         seleccionadas.add(disp);
-                    } else
+                    }
+                    else
                     {
                         rect.setFill(Color.WHITE);
                         seleccionadas.removeIf(d
@@ -66,21 +68,21 @@ public class HorarioControlador
         }
     }
 
-    private void configurarBotonGuardar()
+    public void guardarSeleccionadas()
     {
-        vista.getBtnGuardar().setOnAction(e ->
+        if (seleccionadas.isEmpty())
         {
-            if (seleccionadas.isEmpty())
-            {
-                mostrarAlerta("Sin selección", "No hay disponibilidades seleccionadas para guardar.", Alert.AlertType.WARNING);
-            } else
-            {
-                DisponibilidadDAO.guardarDisponibilidades(seleccionadas);
-                mostrarAlerta("Éxito", "Disponibilidades guardadas correctamente.", Alert.AlertType.INFORMATION);
-                seleccionadas.clear();
-            }
-        });
+            mostrarAlerta("Sin selección", "No hay disponibilidades seleccionadas para guardar.", Alert.AlertType.WARNING);
+        }
+        else
+        {
+            DisponibilidadesDAOImpl dao = new DisponibilidadesDAOImpl();
+            dao.guardarDisponibilidades(seleccionadas);
+            mostrarAlerta("Éxito", "Disponibilidades guardadas correctamente.", Alert.AlertType.INFORMATION);
+            seleccionadas.clear();
+        }
     }
+
 
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo)
     {
