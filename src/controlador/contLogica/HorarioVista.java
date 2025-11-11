@@ -15,41 +15,41 @@ public class HorarioVista
 
     private final String[] dias =
     {
-        "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"
+        "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"
     };
 
     private final String[][] rangos =
     {
         {
             "07:00", "08:00"
-        }, 
+        },
         {
             "08:00", "09:00"
-        }, 
+        },
         {
             "09:00", "10:00"
         },
         {
             "10:00", "11:00"
-        }, 
+        },
         {
             "11:00", "12:00"
-        }, 
+        },
         {
             "12:00", "13:00"
         },
         {
             "13:00", "14:00"
-        }, 
+        },
         {
             "14:00", "15:00"
-        }, 
+        },
         {
             "15:00", "16:00"
         },
         {
             "16:00", "17:00"
-        }, 
+        },
         {
             "17:00", "18:00"
         }
@@ -72,10 +72,12 @@ public class HorarioVista
 
     private void construirEncabezados()
     {
-        for (int i = 0; i < dias.length; i++)
-        {
+        for (int i = 0; i < dias.length; i++) {
             Label diaLabel = new Label(dias[i]);
             diaLabel.setFont(Font.font(14));
+            diaLabel.setAlignment(Pos.CENTER);
+            diaLabel.setPrefWidth(100);
+            diaLabel.setMinHeight(30);
             grid.add(diaLabel, i + 1, 0);
         }
 
@@ -86,6 +88,16 @@ public class HorarioVista
             horaLabel.setFont(Font.font(14));
             grid.add(horaLabel, 0, i + 1);
         }
+
+        // Ajustar ancho de la primera columna (horas)
+        for (javafx.scene.Node node : grid.getChildren()) {
+            Integer colIndex = GridPane.getColumnIndex(node);
+            if (colIndex != null && colIndex == 0 && node instanceof Label) {
+                ((Label) node).setMinWidth(90); // ancho mínimo para las horas
+                ((Label) node).setAlignment(Pos.CENTER_LEFT);
+            }
+        }
+
     }
 
     public BorderPane getRoot()
@@ -105,7 +117,7 @@ public class HorarioVista
 
     public StackPane crearCeldaVisual(Disponibilidades disp)
     {
-        Rectangle rect = new Rectangle(80, 30);
+        Rectangle rect = new Rectangle(120, 30);
         rect.setFill(Color.WHITE);
         rect.setStroke(Color.LIGHTGRAY);
         rect.setArcWidth(6);
