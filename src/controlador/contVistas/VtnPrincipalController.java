@@ -26,6 +26,7 @@ import javafx.collections.transformation.SortedList;
  */
 public class VtnPrincipalController implements Initializable
 {
+
     @FXML
     private ComboBox<String> comboEstado;
     @FXML
@@ -43,25 +44,28 @@ public class VtnPrincipalController implements Initializable
     @FXML
     private TableView<Profesores> tblBuscar;
     @FXML
+    private TableColumn<Profesores, Integer> colId;
+    @FXML
     private TableColumn<Profesores, String> colNombre;
     @FXML
     private TableColumn<Profesores, String> colApellidoPaterno;
     @FXML
     private TableColumn<Profesores, String> colApellidoMaterno;
     @FXML
+    private TableColumn<Profesores, String> colIdentificador;
+    @FXML
     private TableColumn<Profesores, Integer> colHorasDescarga;
     @FXML
     private TableColumn<Profesores, Boolean> colActivo;
     @FXML
     private Tab tabProfesores;
-    @FXML
-    private TableView<Profesores> tablaProfesores;
+    //@FXML
+    //private TableView<Profesores> tablaProfesores;
     @FXML
     private TextField txtBuscar;
     @FXML
     private AnchorPane panelHorario;
     private controlador.contLogica.HorarioControlador horarioControlador;
-
 
     @Override
     public void initialize(URL url, ResourceBundle rb)
@@ -72,16 +76,17 @@ public class VtnPrincipalController implements Initializable
         );
         comboEstado.setValue("Seleccione una opción");
 
-
         Validadores.aplicarFiltroSoloLetras(txtNombre);
         Validadores.aplicarFiltroSoloLetras(txtApellidoPaterno);
         Validadores.aplicarFiltroSoloLetras(txtApellidoMaterno);
 
         Validadores.configurarCheckBoxes(checkAsignar, checkNoAsignar);
 
+        colId.setCellValueFactory(new PropertyValueFactory<>("idProfesor"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colApellidoPaterno.setCellValueFactory(new PropertyValueFactory<>("apellidoP"));
         colApellidoMaterno.setCellValueFactory(new PropertyValueFactory<>("apellidoM"));
+        colIdentificador.setCellValueFactory(new PropertyValueFactory<>("identificador"));
         colHorasDescarga.setCellValueFactory(new PropertyValueFactory<>("horasDescarga"));
         colActivo.setCellValueFactory(new PropertyValueFactory<>("activo"));
 
@@ -90,7 +95,7 @@ public class VtnPrincipalController implements Initializable
             if (tabProfesores.isSelected())
             {
                 cargarProfesores();
-                cargarVistaHorario(); // <<--- Aquí cargamos el horario
+                cargarVistaHorario();
             }
         });
 
@@ -117,9 +122,9 @@ public class VtnPrincipalController implements Initializable
                 return;
             }
 
-            if (!Validadores.soloLetrasValidas(nombre) ||
-                    !Validadores.soloLetrasValidas(apellidoP) ||
-                    !Validadores.soloLetrasValidas(apellidoM))
+            if (!Validadores.soloLetrasValidas(nombre)
+                    || !Validadores.soloLetrasValidas(apellidoP)
+                    || !Validadores.soloLetrasValidas(apellidoM))
             {
                 mostrarAlerta("Formato inválido", "Los nombres y apellidos solo deben contener letras.");
                 return;
@@ -147,7 +152,6 @@ public class VtnPrincipalController implements Initializable
                 hrsdescarga = 1;
             }
 
-
             boolean estado = estadotxt.equals("Activo");
 
             Profesores nuevoProfesor = new Profesores(0, nombre, apellidoP, apellidoM, identificador, hrsdescarga, estado);
@@ -158,8 +162,7 @@ public class VtnPrincipalController implements Initializable
                 mostrarAlerta("Éxito", "Profesor agregado correctamente.");
                 cargarProfesores();
                 limpiarCampos();
-            }
-            else
+            } else
             {
                 mostrarAlerta("Error", "No se pudo agregar el profesor.");
             }
@@ -174,9 +177,11 @@ public class VtnPrincipalController implements Initializable
     @FXML
     private void guardarDisponibilidad()
     {
-        if (horarioControlador != null) {
+        if (horarioControlador != null)
+        {
             horarioControlador.guardarSeleccionadas();
-        } else {
+        } else
+        {
             System.err.println("El controlador de horario no está inicializado.");
         }
     }
@@ -234,22 +239,16 @@ public class VtnPrincipalController implements Initializable
                 if (profesor.getNombre().toLowerCase().contains(lowerCaseFilter))
                 {
                     return true;
+                } else if (profesor.getApellidoP().toLowerCase().contains(lowerCaseFilter))
+                {
+                    return true;
+                } else if (profesor.getApellidoM().toLowerCase().contains(lowerCaseFilter))
+                {
+                    return true;
+                } else if (profesor.getIdentificador().toLowerCase().contains(lowerCaseFilter))
+                {
+                    return true;
                 }
-                else
-                    if (profesor.getApellidoP().toLowerCase().contains(lowerCaseFilter))
-                    {
-                        return true;
-                    }
-                    else
-                        if (profesor.getApellidoM().toLowerCase().contains(lowerCaseFilter))
-                        {
-                            return true;
-                        }
-                        else
-                            if (profesor.getIdentificador().toLowerCase().contains(lowerCaseFilter))
-                            {
-                                return true;
-                            }
                 return false;
             });
         });
@@ -263,11 +262,9 @@ public class VtnPrincipalController implements Initializable
     {
         try
         {
-            // Crear la vista y controlador del horario (usando las nuevas rutas)
             controlador.contLogica.HorarioVista vistaHorario = new controlador.contLogica.HorarioVista();
             horarioControlador = new controlador.contLogica.HorarioControlador(vistaHorario);
 
-            // Insertar la vista en el panel
             panelHorario.getChildren().clear();
             panelHorario.getChildren().add(vistaHorario.getRoot());
 
@@ -282,6 +279,5 @@ public class VtnPrincipalController implements Initializable
             System.err.println("Error al cargar horario: " + e.getMessage());
         }
     }
-
 
 }
