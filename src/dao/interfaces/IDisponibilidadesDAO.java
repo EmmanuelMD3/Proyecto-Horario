@@ -14,4 +14,6 @@ import modelo.entidades.Disponibilidades;
 public interface IDisponibilidadesDAO 
 {
     boolean guardarDisponibilidades(List<Disponibilidades> lista);
+
+
 }

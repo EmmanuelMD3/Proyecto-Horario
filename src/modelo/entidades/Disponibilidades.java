@@ -32,9 +32,19 @@ public class Disponibilidades
         return idProfesor;
     }
 
+    public void setIdProfesor(int idProfesor)
+    {
+        this.idProfesor = idProfesor;
+    }
+
     public String getDia()
     {
         return dia;
+    }
+
+    public void setDia(String dia)
+    {
+        this.dia = dia;
     }
 
     public String getHoraInicio()
@@ -42,9 +52,19 @@ public class Disponibilidades
         return horaInicio;
     }
 
+    public void setHoraInicio(String horaInicio)
+    {
+        this.horaInicio = horaInicio;
+    }
+
     public String getHoraFin()
     {
         return horaFin;
+    }
+
+    public void setHoraFin(String horaFin)
+    {
+        this.horaFin = horaFin;
     }
 
     @Override

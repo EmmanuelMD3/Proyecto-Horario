@@ -38,9 +38,11 @@
                                         <TextField fx:id="txtBuscar" layoutX="63.0" layoutY="32.0" prefHeight="25.0" prefWidth="792.0" />
                                         <TableView fx:id="tblBuscar" editable="true" layoutX="9.0" layoutY="70.0" prefHeight="200.0" prefWidth="845.0">
                                             <columns>
+                                                <TableColumn fx:id="colId" prefWidth="75.0" text="Id" />
                                                 <TableColumn fx:id="colNombre" prefWidth="75.0" text="Nombre" />
                                                 <TableColumn fx:id="colApellidoPaterno" prefWidth="110.0" text="Apellido Paterno" />
                                                 <TableColumn fx:id="colApellidoMaterno" prefWidth="111.0" text="Apellido Materno" />
+                                                <TableColumn fx:id="colIdentificador" prefWidth="75.0" text="Identificador" />
                                                 <TableColumn fx:id="colHorasDescarga" prefWidth="96.0" text="Horas Descarga" />
                                                 <TableColumn fx:id="colActivo" prefWidth="75.0" text="Activo" />
                                             </columns>

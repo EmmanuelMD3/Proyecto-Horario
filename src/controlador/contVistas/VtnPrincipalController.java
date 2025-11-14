@@ -2,9 +2,12 @@ package controlador.contVistas;
 
 import controlador.contLogica.HorarioControlador;
 import controlador.contLogica.HorarioVista;
+import dao.impl.DisponibilidadesDAOImpl;
 import dao.impl.ProfesorDAOImpl;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
@@ -14,6 +17,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import modelo.entidades.Disponibilidades;
 import modelo.entidades.Profesores;
 import util.Validadores;
 import javafx.collections.transformation.FilteredList;
@@ -70,6 +74,29 @@ public class VtnPrincipalController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
+
+        tblBuscar.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) ->
+        {
+            if (newSel != null)
+            {
+                int idProfesor = newSel.getIdProfesor();
+
+                DisponibilidadesDAOImpl dao = new DisponibilidadesDAOImpl();
+                List<Disponibilidades> lista = dao.obtenerPorProfesor(idProfesor);
+
+                if (lista.isEmpty())
+                {
+                    System.out.println("El profesor no tiene disponibilidad registrada.");
+                    horarioControlador.mostrarDisponibilidadesProfesor(new ArrayList<>());
+                }
+                else
+                {
+                    System.out.println("Mostrando disponibilidad de profesor: " + idProfesor);
+                    horarioControlador.mostrarDisponibilidadesProfesor(lista);
+                }
+            }
+        });
+
         comboEstado.getItems().addAll(
                 "Activo",
                 "Inactivo"
@@ -98,6 +125,7 @@ public class VtnPrincipalController implements Initializable
                 cargarVistaHorario();
             }
         });
+
 
     }
 
@@ -162,7 +190,8 @@ public class VtnPrincipalController implements Initializable
                 mostrarAlerta("Éxito", "Profesor agregado correctamente.");
                 cargarProfesores();
                 limpiarCampos();
-            } else
+            }
+            else
             {
                 mostrarAlerta("Error", "No se pudo agregar el profesor.");
             }
@@ -177,10 +206,21 @@ public class VtnPrincipalController implements Initializable
     @FXML
     private void guardarDisponibilidad()
     {
+        Profesores seleccionado = tblBuscar.getSelectionModel().getSelectedItem();
+
+        if (seleccionado == null)
+        {
+            mostrarAlerta("Seleccione un profesor", "Debe seleccionar un profesor antes de guardar disponibilidad.");
+            return;
+        }
+
+        int idProfesor = seleccionado.getIdProfesor();
+
         if (horarioControlador != null)
         {
-            horarioControlador.guardarSeleccionadas();
-        } else
+            horarioControlador.guardarSeleccionadas(idProfesor);
+        }
+        else
         {
             System.err.println("El controlador de horario no está inicializado.");
         }
@@ -239,16 +279,22 @@ public class VtnPrincipalController implements Initializable
                 if (profesor.getNombre().toLowerCase().contains(lowerCaseFilter))
                 {
                     return true;
-                } else if (profesor.getApellidoP().toLowerCase().contains(lowerCaseFilter))
-                {
-                    return true;
-                } else if (profesor.getApellidoM().toLowerCase().contains(lowerCaseFilter))
-                {
-                    return true;
-                } else if (profesor.getIdentificador().toLowerCase().contains(lowerCaseFilter))
-                {
-                    return true;
                 }
+                else
+                    if (profesor.getApellidoP().toLowerCase().contains(lowerCaseFilter))
+                    {
+                        return true;
+                    }
+                    else
+                        if (profesor.getApellidoM().toLowerCase().contains(lowerCaseFilter))
+                        {
+                            return true;
+                        }
+                        else
+                            if (profesor.getIdentificador().toLowerCase().contains(lowerCaseFilter))
+                            {
+                                return true;
+                            }
                 return false;
             });
         });

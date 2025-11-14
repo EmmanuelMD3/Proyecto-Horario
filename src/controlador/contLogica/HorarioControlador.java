@@ -1,30 +1,30 @@
 package controlador.contLogica;
 
 import dao.impl.DisponibilidadesDAOImpl;
-import pruebas.dao.DisponibilidadDAO;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-//import pruebas.conexion.modelo.Disponibilidad;
 import modelo.entidades.Disponibilidades;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HorarioControlador
 {
+    private final Map<String, StackPane> mapaCeldas = new HashMap<>();
 
     private final HorarioVista vista;
     private final List<Disponibilidades> seleccionadas = new ArrayList<>();
-    private final int idProfesor = 1;
 
     public HorarioControlador(HorarioVista vista)
     {
         this.vista = vista;
         inicializarCeldas();
-        //configurarBotonGuardar();
     }
 
     private void inicializarCeldas()
@@ -35,30 +35,41 @@ public class HorarioControlador
 
         for (int row = 0; row < rangos.length; row++)
         {
+
             String horaInicio = rangos[row][0];
             String horaFin = rangos[row][1];
 
             for (int col = 0; col < dias.length; col++)
             {
+
                 String dia = dias[col];
-                Disponibilidades disp = new Disponibilidades(idProfesor, dia, horaInicio, horaFin);
-                StackPane stack = vista.crearCeldaVisual(disp);
-                javafx.scene.shape.Rectangle rect = (javafx.scene.shape.Rectangle) stack.getUserData();
+
+                StackPane stack = vista.crearCeldaVisual(null);
+                Rectangle rect = (Rectangle) stack.getUserData();
+
+                String clave = generarClave(dia, horaInicio, horaFin);
+                mapaCeldas.put(clave, stack);
+
+                System.out.println("Clave generada: " + clave);
 
                 stack.addEventHandler(MouseEvent.MOUSE_CLICKED, e ->
                 {
                     if (rect.getFill().equals(Color.WHITE))
                     {
                         rect.setFill(Color.web("#A5D6A7"));
-                        seleccionadas.add(disp);
+
+                        seleccionadas.add(new Disponibilidades(
+                                0, dia, horaInicio, horaFin
+                        ));
                     }
                     else
                     {
                         rect.setFill(Color.WHITE);
-                        seleccionadas.removeIf(d
-                                -> d.getDia().equals(dia)
-                                && d.getHoraInicio().equals(horaInicio)
-                                && d.getHoraFin().equals(horaFin)
+
+                        seleccionadas.removeIf(d ->
+                                d.getDia().equals(dia) &&
+                                        d.getHoraInicio().equals(horaInicio) &&
+                                        d.getHoraFin().equals(horaFin)
                         );
                     }
                 });
@@ -68,21 +79,64 @@ public class HorarioControlador
         }
     }
 
-    public void guardarSeleccionadas()
+    private String normalizarHora(String h)
     {
-        if (seleccionadas.isEmpty())
-        {
-            mostrarAlerta("Sin selección", "No hay disponibilidades seleccionadas para guardar.", Alert.AlertType.WARNING);
-        }
-        else
-        {
-            DisponibilidadesDAOImpl dao = new DisponibilidadesDAOImpl();
-            dao.guardarDisponibilidades(seleccionadas);
-            mostrarAlerta("Éxito", "Disponibilidades guardadas correctamente.", Alert.AlertType.INFORMATION);
-            seleccionadas.clear();
-        }
+        if (h == null) return "";
+        if (h.length() >= 5) return h.substring(0, 5);
+        return h;
     }
 
+    private String generarClave(String dia, String inicio, String fin)
+    {
+        return dia + "-" + normalizarHora(inicio) + "-" + normalizarHora(fin);
+    }
+
+    public void guardarSeleccionadas(int idProfesor)
+    {
+
+        if (seleccionadas.isEmpty())
+        {
+            mostrarAlerta("Sin selección", "No hay disponibilidades seleccionadas para guardar.",
+                    Alert.AlertType.WARNING);
+            return;
+        }
+
+        seleccionadas.forEach(d -> d.setIdProfesor(idProfesor));
+
+        new DisponibilidadesDAOImpl().guardarDisponibilidades(seleccionadas);
+
+        mostrarAlerta("Éxito", "Disponibilidad guardada correctamente para el profesor.",
+                Alert.AlertType.INFORMATION);
+
+        seleccionadas.clear();
+    }
+
+    public void mostrarDisponibilidadesProfesor(List<Disponibilidades> lista)
+    {
+
+
+        mapaCeldas.values().forEach(stack ->
+        {
+            Rectangle r = (Rectangle) stack.getUserData();
+            r.setFill(Color.WHITE);
+        });
+
+
+        for (Disponibilidades d : lista)
+        {
+
+            String clave = generarClave(d.getDia(), d.getHoraInicio(), d.getHoraFin());
+            System.out.println("Clave BD normalizada: " + clave);
+
+            StackPane celda = mapaCeldas.get(clave);
+
+            if (celda != null)
+            {
+                Rectangle rect = (Rectangle) celda.getUserData();
+                rect.setFill(Color.web("#A5D6A7"));
+            }
+        }
+    }
 
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo)
     {

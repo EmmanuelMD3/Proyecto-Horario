@@ -6,10 +6,14 @@ package dao.impl;
 
 import dao.interfaces.IDisponibilidadesDAO;
 import conexion.ConexionBD;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
+
 import modelo.entidades.Disponibilidades;
+
 import java.sql.*;
 
 /**
@@ -22,9 +26,9 @@ public class DisponibilidadesDAOImpl implements IDisponibilidadesDAO
 
     public DisponibilidadesDAOImpl()
     {
-        conn = ConexionBD.conectar(); 
+        conn = ConexionBD.conectar();
     }
-    
+
     @Override
     public boolean guardarDisponibilidades(List<Disponibilidades> lista)
     {
@@ -52,5 +56,39 @@ public class DisponibilidadesDAOImpl implements IDisponibilidadesDAO
             return false;
         }
     }
-    
+
+    public List<Disponibilidades> obtenerPorProfesor(int idProfesor)
+    {
+        List<Disponibilidades> lista = new ArrayList<>();
+        String sql = "SELECT dia, hora_inicio, hora_fin FROM Disponibilidades WHERE idProfesor = ?";
+
+        try (Connection conn = ConexionBD.getConexion();
+             PreparedStatement ps = conn.prepareStatement(sql))
+        {
+            ps.setInt(1, idProfesor);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next())
+            {
+                String dia = rs.getString("dia");
+                String horaInicio = rs.getString("hora_inicio").substring(0, 5);
+                String horaFin = rs.getString("hora_fin").substring(0, 5);
+
+                Disponibilidades d = new Disponibilidades(
+                        idProfesor,
+                        dia,
+                        horaInicio,
+                        horaFin
+                );
+
+                lista.add(d);
+            }
+
+        } catch (SQLException e)
+        {
+            System.err.println("Error al obtener disponibilidades: " + e.getMessage());
+        }
+        return lista;
+    }
 }
+
