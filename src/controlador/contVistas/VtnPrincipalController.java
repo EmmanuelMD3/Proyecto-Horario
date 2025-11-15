@@ -23,6 +23,8 @@ import util.Validadores;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 
+import javax.swing.*;
+
 /**
  * FXML Controller class
  *
@@ -63,8 +65,8 @@ public class VtnPrincipalController implements Initializable
     private TableColumn<Profesores, Boolean> colActivo;
     @FXML
     private Tab tabProfesores;
-    //@FXML
-    //private TableView<Profesores> tablaProfesores;
+    @FXML
+    private Button btnGuardarDisponibilidad;
     @FXML
     private TextField txtBuscar;
     @FXML
@@ -75,27 +77,50 @@ public class VtnPrincipalController implements Initializable
     public void initialize(URL url, ResourceBundle rb)
     {
 
+        tblBuscar.setRowFactory(tv ->
+        {
+            TableRow<Profesores> row = new TableRow<>();
+
+            row.setOnMouseClicked(event ->
+            {
+                if (!row.isEmpty() && event.getClickCount() == 2)
+                {
+                    Profesores profesor = row.getItem();
+                    mostrarDialogoModificar(profesor);
+                }
+            });
+
+            return row;
+        });
+
+
         tblBuscar.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) ->
         {
             if (newSel != null)
             {
+
                 int idProfesor = newSel.getIdProfesor();
 
                 DisponibilidadesDAOImpl dao = new DisponibilidadesDAOImpl();
                 List<Disponibilidades> lista = dao.obtenerPorProfesor(idProfesor);
 
+                horarioControlador.mostrarDisponibilidadesProfesor(lista);
+
                 if (lista.isEmpty())
                 {
-                    System.out.println("El profesor no tiene disponibilidad registrada.");
-                    horarioControlador.mostrarDisponibilidadesProfesor(new ArrayList<>());
+                    btnGuardarDisponibilidad.setDisable(false);
+                    horarioControlador.setBloqueoEdicion(false);
+                    System.out.println("Profesor sin disponibilidad → puede registrar.");
                 }
                 else
                 {
-                    System.out.println("Mostrando disponibilidad de profesor: " + idProfesor);
-                    horarioControlador.mostrarDisponibilidadesProfesor(lista);
+                    btnGuardarDisponibilidad.setDisable(true);
+                    horarioControlador.setBloqueoEdicion(true);
+                    System.out.println("Profesor YA tiene disponibilidad → edición bloqueada.");
                 }
             }
         });
+
 
         comboEstado.getItems().addAll(
                 "Activo",
@@ -125,8 +150,6 @@ public class VtnPrincipalController implements Initializable
                 cargarVistaHorario();
             }
         });
-
-
     }
 
     @FXML
@@ -219,12 +242,23 @@ public class VtnPrincipalController implements Initializable
         if (horarioControlador != null)
         {
             horarioControlador.guardarSeleccionadas(idProfesor);
+
+            DisponibilidadesDAOImpl dao = new DisponibilidadesDAOImpl();
+            List<Disponibilidades> lista = dao.obtenerPorProfesor(idProfesor);
+
+            horarioControlador.mostrarDisponibilidadesProfesor(lista);
+
+            btnGuardarDisponibilidad.setDisable(true);
+            horarioControlador.setBloqueoEdicion(true);
+
+            System.out.println("Disponibilidad guardada → Edición bloqueada.");
         }
         else
         {
             System.err.println("El controlador de horario no está inicializado.");
         }
     }
+
 
     @FXML
     private void Modificar()
@@ -326,4 +360,47 @@ public class VtnPrincipalController implements Initializable
         }
     }
 
+    private void cargarDatosEnFormulario(Profesores profesor)
+    {
+        txtNombre.setText(profesor.getNombre());
+        txtApellidoPaterno.setText(profesor.getApellidoP());
+        txtApellidoMaterno.setText(profesor.getApellidoM());
+        txtIdentificador.setText(profesor.getIdentificador());
+
+        comboEstado.setValue(profesor.isActivo() ? "Activo" : "Inactivo");
+
+        if (profesor.getHorasDescarga() !=0)
+        {
+            checkAsignar.setSelected(true);
+            checkNoAsignar.setSelected(false);
+        }
+        else
+        {
+            checkAsignar.setSelected(false);
+            checkNoAsignar.setSelected(true);
+        }
+    }
+
+
+    private void mostrarDialogoModificar(Profesores profesor)
+    {
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Modificar Profesor");
+        alert.setHeaderText("¿Deseas modificar los datos de este profesor?");
+        alert.setContentText(profesor.getNombre() + " " + profesor.getApellidoP());
+
+        ButtonType botonSi = new ButtonType("Sí");
+        ButtonType botonNo = new ButtonType("No");
+
+        alert.getButtonTypes().setAll(botonSi, botonNo);
+
+        alert.showAndWait().ifPresent(tipo ->
+        {
+            if (tipo == botonSi)
+            {
+                cargarDatosEnFormulario(profesor);
+            }
+        });
+    }
 }

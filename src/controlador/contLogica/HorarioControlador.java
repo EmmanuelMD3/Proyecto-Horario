@@ -20,6 +20,13 @@ public class HorarioControlador
 
     private final HorarioVista vista;
     private final List<Disponibilidades> seleccionadas = new ArrayList<>();
+    private boolean bloqueoEdicion = false;
+
+    public void setBloqueoEdicion(boolean bloqueo)
+    {
+        this.bloqueoEdicion = bloqueo;
+    }
+
 
     public HorarioControlador(HorarioVista vista)
     {
@@ -54,6 +61,11 @@ public class HorarioControlador
 
                 stack.addEventHandler(MouseEvent.MOUSE_CLICKED, e ->
                 {
+                    if (bloqueoEdicion)
+                    {
+                        return;
+                    }
+
                     if (rect.getFill().equals(Color.WHITE))
                     {
                         rect.setFill(Color.web("#A5D6A7"));

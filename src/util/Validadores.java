@@ -1,7 +1,10 @@
 package util;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import modelo.entidades.Profesores;
 
 public class Validadores
 {
@@ -33,5 +36,7 @@ public class Validadores
     {
         return texto.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+");
     }
+
+
 
 }
