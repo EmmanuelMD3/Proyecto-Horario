@@ -73,9 +73,34 @@ public class VtnPrincipalController implements Initializable
     private AnchorPane panelHorario;
     private controlador.contLogica.HorarioControlador horarioControlador;
 
+    private Profesores profesorSeleccionado;
+
+
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
+
+        txtIdentificador.textProperty().addListener((obs, oldText, newText) ->
+        {
+            if (newText != null && !newText.matches("[A-Za-z0-9]*"))
+            {
+                txtIdentificador.setText(oldText.toUpperCase());
+            }
+            else
+            {
+                txtIdentificador.setText(newText.toUpperCase());
+            }
+        });
+
+
+        txtIdentificador.textProperty().addListener((obs, oldText, newText) ->
+        {
+            if (newText != null)
+            {
+                txtIdentificador.setText(newText.toUpperCase());
+            }
+        });
+
 
         tblBuscar.setRowFactory(tv ->
         {
@@ -85,8 +110,10 @@ public class VtnPrincipalController implements Initializable
             {
                 if (!row.isEmpty() && event.getClickCount() == 2)
                 {
-                    Profesores profesor = row.getItem();
-                    mostrarDialogoModificar(profesor);
+
+                    profesorSeleccionado = row.getItem();
+
+                    cargarDatosEnFormulario(profesorSeleccionado);
                 }
             });
 
@@ -131,7 +158,6 @@ public class VtnPrincipalController implements Initializable
         Validadores.aplicarFiltroSoloLetras(txtNombre);
         Validadores.aplicarFiltroSoloLetras(txtApellidoPaterno);
         Validadores.aplicarFiltroSoloLetras(txtApellidoMaterno);
-
         Validadores.configurarCheckBoxes(checkAsignar, checkNoAsignar);
 
         colId.setCellValueFactory(new PropertyValueFactory<>("idProfesor"));
@@ -142,6 +168,11 @@ public class VtnPrincipalController implements Initializable
         colHorasDescarga.setCellValueFactory(new PropertyValueFactory<>("horasDescarga"));
         colActivo.setCellValueFactory(new PropertyValueFactory<>("activo"));
 
+        inicializaTabla();
+    }
+
+    private void inicializaTabla()
+    {
         tabProfesores.setOnSelectionChanged(event ->
         {
             if (tabProfesores.isSelected())
@@ -181,9 +212,9 @@ public class VtnPrincipalController implements Initializable
                 return;
             }
 
-            if (!identificador.matches("\\d+"))
+            if (!identificador.matches("[A-Za-z0-9]+"))
             {
-                mostrarAlerta("Identificador inválido", "El identificador debe contener solo números.");
+                mostrarAlerta("Identificador inválido", "El identificador debe contener solo letras y números (A-Z, 0-9).");
                 return;
             }
 
@@ -263,8 +294,92 @@ public class VtnPrincipalController implements Initializable
     @FXML
     private void Modificar()
     {
+        if (profesorSeleccionado == null)
+        {
+            mostrarAlerta("Sin selección", "Debe hacer doble clic en un profesor para modificarlo.");
+            return;
+        }
 
+        String nombreNuevo = txtNombre.getText().trim();
+        String apellidoPNuevo = txtApellidoPaterno.getText().trim();
+        String apellidoMNuevo = txtApellidoMaterno.getText().trim();
+        String identificadorNuevo = txtIdentificador.getText().trim();
+        boolean activoNuevo = comboEstado.getValue().equals("Activo");
+        int horasDescargaNueva = checkAsignar.isSelected() ? 1 : 0;
+
+        if (nombreNuevo.isEmpty() || apellidoPNuevo.isEmpty() || apellidoMNuevo.isEmpty() || identificadorNuevo.isEmpty())
+        {
+            mostrarAlerta("Campos incompletos", "Debe llenar todos los campos antes de modificar.");
+            return;
+        }
+
+        if (!Validadores.soloLetrasValidas(nombreNuevo) ||
+                !Validadores.soloLetrasValidas(apellidoPNuevo) ||
+                !Validadores.soloLetrasValidas(apellidoMNuevo))
+        {
+            mostrarAlerta("Formato inválido", "Nombre y apellidos deben contener solo letras.");
+            return;
+        }
+
+        if (!identificadorNuevo.matches("[A-Za-z0-9]+"))
+        {
+            mostrarAlerta("Identificador inválido", "Debe contener solo letras y números.");
+            return;
+        }
+
+        StringBuilder cambios = new StringBuilder("Cambios detectados:\n\n");
+
+        agregarCambio(cambios, "Nombre", profesorSeleccionado.getNombre(), nombreNuevo);
+        agregarCambio(cambios, "Apellido Paterno", profesorSeleccionado.getApellidoP(), apellidoPNuevo);
+        agregarCambio(cambios, "Apellido Materno", profesorSeleccionado.getApellidoM(), apellidoMNuevo);
+        agregarCambio(cambios, "Identificador", profesorSeleccionado.getIdentificador(), identificadorNuevo);
+        agregarCambio(cambios, "Estado", profesorSeleccionado.isActivo() ? "Activo" : "Inactivo",
+                activoNuevo ? "Activo" : "Inactivo");
+        agregarCambio(cambios, "Horas de Descarga",
+                profesorSeleccionado.getHorasDescarga() == 1 ? "Asignar" : "No Asignar",
+                horasDescargaNueva == 1 ? "Asignar" : "No Asignar");
+
+        if (cambios.toString().equals("Cambios detectados:\n\n"))
+        {
+            mostrarAlerta("Sin cambios", "No modificaste ningún dato.");
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmar modificación");
+        alert.setHeaderText("¿Deseas modificar este profesor?");
+        alert.setContentText(cambios.toString());
+
+        if (alert.showAndWait().get() != ButtonType.OK)
+        {
+            return;
+        }
+
+        profesorSeleccionado.setNombre(nombreNuevo);
+        profesorSeleccionado.setApellidoP(apellidoPNuevo);
+        profesorSeleccionado.setApellidoM(apellidoMNuevo);
+        profesorSeleccionado.setIdentificador(identificadorNuevo);
+        profesorSeleccionado.setActivo(activoNuevo);
+        profesorSeleccionado.setHorasDescarga(horasDescargaNueva);
+
+        ProfesorDAOImpl dao = new ProfesorDAOImpl();
+        dao.actualizarProfesor(profesorSeleccionado);
+
+        mostrarAlerta("Realizado", "Los datos del profesor fueron modificados.");
+        cargarProfesores();
     }
+
+    private void agregarCambio(StringBuilder sb, String campo, String viejo, String nuevo)
+    {
+        if (!viejo.equals(nuevo))
+        {
+            sb.append(campo)
+                    .append(":\n   • Antes: ").append(viejo)
+                    .append("\n   • Ahora:  ").append(nuevo)
+                    .append("\n\n");
+        }
+    }
+
 
     @FXML
     private void Cancelar()
@@ -369,7 +484,7 @@ public class VtnPrincipalController implements Initializable
 
         comboEstado.setValue(profesor.isActivo() ? "Activo" : "Inactivo");
 
-        if (profesor.getHorasDescarga() !=0)
+        if (profesor.getHorasDescarga() == 1)
         {
             checkAsignar.setSelected(true);
             checkNoAsignar.setSelected(false);
@@ -399,6 +514,7 @@ public class VtnPrincipalController implements Initializable
         {
             if (tipo == botonSi)
             {
+                profesorSeleccionado = profesor;
                 cargarDatosEnFormulario(profesor);
             }
         });
