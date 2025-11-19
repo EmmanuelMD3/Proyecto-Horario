@@ -75,6 +75,9 @@ public class VtnPrincipalController implements Initializable
 
     private Profesores profesorSeleccionado;
 
+    @FXML
+    private TextField txtBuscar1;
+
 
     @Override
     public void initialize(URL url, ResourceBundle rb)

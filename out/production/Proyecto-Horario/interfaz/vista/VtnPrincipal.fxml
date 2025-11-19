@@ -12,108 +12,135 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="VtnPrincipal" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controlador.contVistas.VtnPrincipalController">
-    <children>
-        <TabPane prefHeight="800.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE">
-            <tabs>
-                <Tab text="Generar Horario">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
-                </Tab>
-                <Tab fx:id="tabProfesores" text="Profesores">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                            <children>
-                                <Pane layoutX="8.0" layoutY="6.0" prefHeight="769.0" prefWidth="1262.0">
-                                    <children>
-                                        <Label layoutX="14.0" layoutY="35.0" text="Buscar:">
-                                            <font>
-                                                <Font size="13.0" />
-                                            </font>
-                                        </Label>
-                                        <TextField fx:id="txtBuscar" layoutX="63.0" layoutY="32.0" prefHeight="25.0" prefWidth="792.0" />
-                                        <TableView fx:id="tblBuscar" editable="true" layoutX="9.0" layoutY="70.0" prefHeight="200.0" prefWidth="845.0">
-                                            <columns>
-                                                <TableColumn fx:id="colId" prefWidth="75.0" text="Id" />
-                                                <TableColumn fx:id="colNombre" prefWidth="75.0" text="Nombre" />
-                                                <TableColumn fx:id="colApellidoPaterno" prefWidth="110.0" text="Apellido Paterno" />
-                                                <TableColumn fx:id="colApellidoMaterno" prefWidth="111.0" text="Apellido Materno" />
-                                                <TableColumn fx:id="colIdentificador" prefWidth="75.0" text="Identificador" />
-                                                <TableColumn fx:id="colHorasDescarga" prefWidth="96.0" text="Horas Descarga" />
-                                                <TableColumn fx:id="colActivo" prefWidth="75.0" text="Activo" />
-                                            </columns>
-                                            <columnResizePolicy>
-                                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                                            </columnResizePolicy>
-                                        </TableView>
-                                        <TabPane layoutX="119.0" layoutY="292.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" />
-                                        <Separator layoutX="873.0" layoutY="-13.0" orientation="VERTICAL" prefHeight="779.0" prefWidth="4.0" />
-                                        <Label layoutX="905.0" layoutY="36.0" text="Datos:">
-                                            <font>
-                                                <Font size="13.0" />
-                                            </font>
-                                        </Label>
-                                        <Label layoutX="905.0" layoutY="70.0" text="Nombre:">
-                                            <font>
-                                                <Font size="13.0" />
-                                            </font>
-                                        </Label>
-                                        <TextField fx:id="txtNombre" layoutX="905.0" layoutY="89.0" prefHeight="25.0" prefWidth="337.0" />
-                                        <Label layoutX="907.0" layoutY="139.0" text="Apellido Paterno:">
-                                            <font>
-                                                <Font size="13.0" />
-                                            </font>
-                                        </Label>
-                                        <TextField fx:id="txtApellidoPaterno" layoutX="905.0" layoutY="158.0" prefHeight="25.0" prefWidth="337.0" />
-                                        <TextField fx:id="txtApellidoMaterno" layoutX="905.0" layoutY="225.0" prefHeight="25.0" prefWidth="337.0" />
-                                        <Label layoutX="905.0" layoutY="206.0" text="Apellido Materno:">
-                                            <font>
-                                                <Font size="13.0" />
-                                            </font>
-                                        </Label>
-                                        <Label layoutX="905.0" layoutY="275.0" text="Identificador:">
-                                            <font>
-                                                <Font size="13.0" />
-                                            </font>
-                                        </Label>
-                                        <TextField fx:id="txtIdentificador" layoutX="905.0" layoutY="294.0" prefHeight="25.0" prefWidth="335.0" />
-                                        <Label layoutX="905.0" layoutY="342.0" text="Horas de Descarga:">
-                                            <font>
-                                                <Font size="13.0" />
-                                            </font>
-                                        </Label>
-                                        <CheckBox fx:id="checkAsignar" layoutX="905.0" layoutY="368.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="85.0" text="Asignar">
-                                            <font>
-                                                <Font size="13.0" />
-                                            </font>
-                                        </CheckBox>
-                                        <CheckBox fx:id="checkNoAsignar" layoutX="1006.0" layoutY="369.0" mnemonicParsing="false" text="No Asignar" />
-                                        <Label layoutX="909.0" layoutY="405.0" prefHeight="17.0" prefWidth="47.0" text="Estado:">
-                                            <font>
-                                                <Font size="13.0" />
-                                            </font>
-                                        </Label>
-                                        <ComboBox fx:id="comboEstado" layoutX="905.0" layoutY="424.0" prefHeight="25.0" prefWidth="172.0" promptText="Seleccione una opcion">
-                                            <effect>
-                                                <Blend />
-                                            </effect>
-                                        </ComboBox>
-                                        <Button fx:id="btnAceptar" layoutX="903.0" layoutY="538.0" mnemonicParsing="false" onAction="#Aceptar" prefHeight="25.0" prefWidth="339.0" text="ACEPTAR" />
-                                        <Button fx:id="btnModificar" layoutX="904.0" layoutY="578.0" mnemonicParsing="false" onAction="#Modificar" prefHeight="25.0" prefWidth="337.0" text="MODIFICAR" />
-                                        <Button fx:id="btnCancelar" layoutX="904.0" layoutY="617.0" mnemonicParsing="false" onAction="#Cancelar" prefHeight="25.0" prefWidth="337.0" text="CANCELAR" />
-                                        <Button fx:id="btnGuardarDisponibilidad" layoutX="8.0" layoutY="733.0" mnemonicParsing="false" onAction="#guardarDisponibilidad" prefHeight="22.0" prefWidth="143.0" text="Guardar Disponibilidad" />
+<BorderPane prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controlador.contVistas.VtnPrincipalController">
+   <top>
+      <TabPane prefHeight="800.0" prefWidth="214.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+         <tabs>
+            <Tab text="Generar Horario">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+               </content>
+            </Tab>
+            <Tab fx:id="tabProfesores" text="Profesores">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Pane layoutX="8.0" layoutY="6.0" prefHeight="769.0" prefWidth="1262.0">
+                           <children>
+                              <Label layoutX="14.0" layoutY="35.0" text="Buscar:">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="txtBuscar" layoutX="63.0" layoutY="32.0" prefHeight="25.0" prefWidth="792.0" />
+                              <TableView fx:id="tblBuscar" layoutX="9.0" layoutY="70.0" prefHeight="200.0" prefWidth="845.0">
+                                 <columns>
+                                    <TableColumn fx:id="colId" prefWidth="75.0" text="Id" />
+                                    <TableColumn fx:id="colNombre" prefWidth="75.0" text="Nombre" />
+                                    <TableColumn fx:id="colApellidoPaterno" prefWidth="110.0" text="Apellido Paterno" />
+                                    <TableColumn fx:id="colApellidoMaterno" prefWidth="111.0" text="Apellido Materno" />
+                                    <TableColumn fx:id="colIdentificador" prefWidth="75.0" text="Identificador" />
+                                    <TableColumn fx:id="colHorasDescarga" prefWidth="96.0" text="Horas Descarga" />
+                                    <TableColumn fx:id="colActivo" prefWidth="75.0" text="Activo" />
+                                 </columns>
+                                 <columnResizePolicy>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                 </columnResizePolicy>
+                              </TableView>
+                              <TabPane layoutX="119.0" layoutY="292.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" />
+                              <Separator layoutX="873.0" layoutY="-13.0" orientation="VERTICAL" prefHeight="779.0" prefWidth="4.0" />
+                              <Label layoutX="905.0" layoutY="36.0" text="Datos:">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="905.0" layoutY="70.0" text="Nombre:">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="txtNombre" layoutX="905.0" layoutY="89.0" prefHeight="25.0" prefWidth="337.0" />
+                              <Label layoutX="907.0" layoutY="139.0" text="Apellido Paterno:">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="txtApellidoPaterno" layoutX="905.0" layoutY="158.0" prefHeight="25.0" prefWidth="337.0" />
+                              <TextField fx:id="txtApellidoMaterno" layoutX="905.0" layoutY="225.0" prefHeight="25.0" prefWidth="337.0" />
+                              <Label layoutX="905.0" layoutY="206.0" text="Apellido Materno:">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="905.0" layoutY="275.0" text="Identificador:">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="txtIdentificador" layoutX="905.0" layoutY="294.0" prefHeight="25.0" prefWidth="335.0" />
+                              <Label layoutX="905.0" layoutY="342.0" text="Horas de Descarga:">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </Label>
+                              <CheckBox fx:id="checkAsignar" layoutX="905.0" layoutY="368.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="85.0" text="Asignar">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </CheckBox>
+                              <CheckBox fx:id="checkNoAsignar" layoutX="1006.0" layoutY="369.0" mnemonicParsing="false" text="No Asignar" />
+                              <Label layoutX="909.0" layoutY="405.0" prefHeight="17.0" prefWidth="47.0" text="Estado:">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="comboEstado" layoutX="905.0" layoutY="424.0" prefHeight="25.0" prefWidth="172.0" promptText="Seleccione una opcion">
+                                 <effect>
+                                    <Blend />
+                                 </effect>
+                              </ComboBox>
+                              <Button fx:id="btnAceptar" layoutX="903.0" layoutY="538.0" mnemonicParsing="false" onAction="#Aceptar" prefHeight="25.0" prefWidth="339.0" text="ACEPTAR" />
+                              <Button fx:id="btnModificar" layoutX="904.0" layoutY="578.0" mnemonicParsing="false" onAction="#Modificar" prefHeight="25.0" prefWidth="337.0" text="MODIFICAR" />
+                              <Button fx:id="btnCancelar" layoutX="904.0" layoutY="617.0" mnemonicParsing="false" onAction="#Cancelar" prefHeight="25.0" prefWidth="337.0" text="CANCELAR" />
+                              <Button fx:id="btnGuardarDisponibilidad" layoutX="8.0" layoutY="733.0" mnemonicParsing="false" onAction="#guardarDisponibilidad" prefHeight="22.0" prefWidth="143.0" text="Guardar Disponibilidad" />
                               <AnchorPane fx:id="panelHorario" layoutX="8.0" layoutY="278.0" prefHeight="445.0" prefWidth="849.0" />
-                                    </children>
-                                </Pane>
-                            </children>
-                        </AnchorPane>
-                    </content>
-                </Tab>
-            </tabs>
-        </TabPane>
-    </children>
-</AnchorPane>
+                           </children>
+                        </Pane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab text="Carreras - Materias">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <AnchorPane layoutX="-9.0" layoutY="7.0" prefHeight="766.0" prefWidth="1297.0">
+                           <children>
+                              <Label layoutX="26.0" layoutY="14.0" prefHeight="18.0" prefWidth="45.0" text="Buscar:">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="txtBuscar1" layoutX="72.0" layoutY="11.0" prefHeight="26.0" prefWidth="1189.0" />
+                              <Label layoutX="26.0" layoutY="66.0" text="Carreras:" />
+                              <TableView layoutX="26.0" layoutY="90.0" prefHeight="194.0" prefWidth="686.0">
+                                <columns>
+                                  <TableColumn prefWidth="75.0" text="ID" />
+                                  <TableColumn prefWidth="75.0" text="Nombre" />
+                                    <TableColumn prefWidth="75.0" text="Clave" />
+                                    <TableColumn prefWidth="75.0" text="Descripcion" />
+                                </columns>
+                              </TableView>
+                           </children></AnchorPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+   </top>
+</BorderPane>
