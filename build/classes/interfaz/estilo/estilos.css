@@ -1,0 +1,41 @@
+/* ===========================
+   TABPANE (Slim – delgadas)
+=========================== */
+
+/* Reduce altura del área de pestañas */
+.tab-pane *.tab-header-area {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-min-height: 25;      /* altura mínima */
+    -fx-pref-height: 25;     /* altura preferida */
+    -fx-max-height: 25;      /* altura máxima */
+    -fx-background-color: #e5e8ec;
+    -fx-border-color: #cfd3d8;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* Cada pestaña mini */
+.tab {
+    -fx-padding: 3 10;       /* más pequeña */
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+/* Hover sutil */
+.tab:hover {
+    -fx-background-color: #f3f5f7;
+}
+
+/* La pestaña seleccionada */
+.tab:selected {
+    -fx-background-color: white;
+    -fx-border-color: #cfd3d8 #cfd3d8 transparent #cfd3d8;
+    -fx-border-width: 1 1 0 1;
+}
+
+/* Texto */
+.tab-label {
+    -fx-font-size: 12px;     /* más pequeño */
+    -fx-font-weight: bold;
+    -fx-text-fill: #3c4658;
+}
