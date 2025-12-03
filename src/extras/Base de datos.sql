@@ -143,3 +143,15 @@ CREATE TABLE Reglas_Horarias (
                                  valor VARCHAR(100) NOT NULL,
                                  UNIQUE KEY uq_clave (clave)
 ) ENGINE=InnoDB;
+
+CREATE TABLE Profesor_Descarga (
+                                   idProfesor INT NOT NULL,
+                                   idDescarga INT NOT NULL,
+                                   horas_asignadas INT NOT NULL,
+                                   PRIMARY KEY (idProfesor, idDescarga),
+                                   FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor)
+                                       ON UPDATE CASCADE ON DELETE CASCADE,
+                                   FOREIGN KEY (idDescarga) REFERENCES Descargas(idDescarga)
+                                       ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB;
+
