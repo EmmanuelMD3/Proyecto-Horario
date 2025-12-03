@@ -19,6 +19,13 @@ public class Materias
         this.horas_semana = horas_semana;
     }
 
+    public Materias(int idMateria, String nombre, int horas_semana)
+    {
+        this.idMateria = idMateria;
+        this.nombre = nombre;
+        this.horas_semana = horas_semana;
+    }
+
     public int getIdMateria()
     {
         return idMateria;
@@ -60,13 +67,8 @@ public class Materias
     }
 
     @Override
-    public String toString()
-    {
-        return "Materias{" +
-                "idMateria=" + idMateria +
-                ", nombre='" + nombre + '\'' +
-                ", idSemestre=" + idSemestre +
-                ", horas_semana=" + horas_semana +
-                '}';
+    public String toString() {
+        return nombre;
     }
+
 }

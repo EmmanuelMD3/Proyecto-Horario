@@ -8,21 +8,21 @@ public class Profesores
     private String apellidoP;
     private String apellidoM;
     private String identificador;
-    private int horasDescarga;
+    //private int horasDescarga;
     private boolean activo;
 
     public Profesores()
     {
     }
 
-    public Profesores(int idProfesor, String nombre, String apellidoP, String apellidoM, String identificador, int horasDescarga, boolean activo)
+    public Profesores(int idProfesor, String nombre, String apellidoP, String apellidoM, String identificador, boolean activo)
     {
         this.idProfesor = idProfesor;
         this.nombre = nombre;
         this.apellidoP = apellidoP;
         this.apellidoM = apellidoM;
         this.identificador = identificador;
-        this.horasDescarga = horasDescarga;
+        //this.horasDescarga = horasDescarga;
         this.activo = activo;
     }
 
@@ -67,7 +67,7 @@ public class Profesores
         this.apellidoM = apellidoM;
     }
 
-    public int getHorasDescarga()
+    /*public int getHorasDescarga()
     {
         return horasDescarga;
     }
@@ -75,7 +75,7 @@ public class Profesores
     public void setHorasDescarga(int horasDescarga)
     {
         this.horasDescarga = horasDescarga;
-    }
+    }*/
 
     public boolean isActivo()
     {
@@ -106,6 +106,6 @@ public class Profesores
     @Override
     public String toString()
     {
-        return "Profesores{" + "idProfesor=" + idProfesor + ", nombre=" + nombre + ", apellidoP=" + apellidoP + ", apellidoM=" + apellidoM + ", identificador=" + identificador + ", horasDescarga=" + horasDescarga + ", activo=" + activo + '}';
+        return "Profesores{" + "idProfesor=" + idProfesor + ", nombre=" + nombre + ", apellidoP=" + apellidoP + ", apellidoM=" + apellidoM + ", identificador=" + identificador + ", activo=" + activo + '}';
     }
 }

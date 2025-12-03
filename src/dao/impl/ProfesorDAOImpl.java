@@ -24,16 +24,16 @@ public class ProfesorDAOImpl implements IProfesorDAO
     @Override
     public boolean agregarProfesor(Profesores profesor)
     {
-        String sql = "INSERT INTO Profesores (nombre, apellidoP, apellidoM, identificador, horas_descarga, activo) "
-                + "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Profesores (nombre, apellidoP, apellidoM, identificador, activo) "
+                + "VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql))
         {
             ps.setString(1, profesor.getNombre());
             ps.setString(2, profesor.getApellidoP());
             ps.setString(3, profesor.getApellidoM());
             ps.setString(4, profesor.getIdentificador());
-            ps.setInt(5, profesor.getHorasDescarga());
-            ps.setBoolean(6, profesor.isActivo());
+
+            ps.setBoolean(5, profesor.isActivo());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e)
@@ -46,7 +46,7 @@ public class ProfesorDAOImpl implements IProfesorDAO
     @Override
     public boolean actualizarProfesor(Profesores profesor)
     {
-        String sql = "UPDATE Profesores SET nombre=?, apellidoP=?, apellidoM=?, identificador=?, horas_descarga=?, activo=? "
+        String sql = "UPDATE Profesores SET nombre=?, apellidoP=?, apellidoM=?, identificador=?, activo=? "
                 + "WHERE idProfesor=?";
         try (PreparedStatement ps = conn.prepareStatement(sql))
         {
@@ -54,7 +54,7 @@ public class ProfesorDAOImpl implements IProfesorDAO
             ps.setString(2, profesor.getApellidoP());
             ps.setString(3, profesor.getApellidoM());
             ps.setString(4, profesor.getIdentificador());
-            ps.setInt(5, profesor.getHorasDescarga());
+
             ps.setBoolean(6, profesor.isActivo());
             ps.setInt(7, profesor.getIdProfesor());
             return ps.executeUpdate() > 0;
@@ -97,7 +97,7 @@ public class ProfesorDAOImpl implements IProfesorDAO
                 p.setApellidoP(rs.getString("apellidoP"));
                 p.setApellidoM(rs.getString("apellidoM"));
                 p.setIdentificador(rs.getString("identificador"));
-                p.setHorasDescarga(rs.getInt("horas_descarga"));
+
                 p.setActivo(rs.getBoolean("activo"));
                 return p;
             }
@@ -124,7 +124,7 @@ public class ProfesorDAOImpl implements IProfesorDAO
                 p.setApellidoP(rs.getString("apellidoP"));
                 p.setApellidoM(rs.getString("apellidoM"));
                 p.setIdentificador(rs.getString("identificador"));
-                p.setHorasDescarga(rs.getInt("horas_descarga"));
+
                 p.setActivo(rs.getBoolean("activo"));
                 lista.add(p);
             }

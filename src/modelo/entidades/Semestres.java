@@ -4,84 +4,72 @@ import java.sql.Date;
 
 public class Semestres
 {
+    int idSemestre;
+    int numero;
+    boolean activo;
     int idCiclo;
-    String nombre;
-    int tipo;
-    Date fecha_inicio;
-    Date fecha_final;
+    int idCarrera;
 
     public Semestres()
     {
     }
 
-    public Semestres(int idCiclo, String nombre, int tipo, Date fecha_inicio, Date fecha_final)
-    {
+    public Semestres(int idSemestre, int numero, boolean activo, int idCiclo, int idCarrera) {
+        this.idSemestre = idSemestre;
+        this.numero = numero;
+        this.activo = activo;
         this.idCiclo = idCiclo;
-        this.nombre = nombre;
-        this.tipo = tipo;
-        this.fecha_inicio = fecha_inicio;
-        this.fecha_final = fecha_final;
+        this.idCarrera = idCarrera;
     }
 
-    public int getIdCiclo()
+    public Semestres(int idSemestre, int numero)
     {
+        this.idSemestre = idSemestre;
+        this.numero = numero;
+    }
+
+    public int getIdSemestre() {
+        return idSemestre;
+    }
+
+    public void setIdSemestre(int idSemestre) {
+        this.idSemestre = idSemestre;
+    }
+
+    public int getNumero() {
+        return numero;
+    }
+
+    public void setNumero(int numero) {
+        this.numero = numero;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    public int getIdCiclo() {
         return idCiclo;
     }
 
-    public void setIdCiclo(int idCiclo)
-    {
+    public void setIdCiclo(int idCiclo) {
         this.idCiclo = idCiclo;
     }
 
-    public String getNombre()
-    {
-        return nombre;
+    public int getIdCarrera() {
+        return idCarrera;
     }
 
-    public void setNombre(String nombre)
-    {
-        this.nombre = nombre;
-    }
-
-    public int getTipo()
-    {
-        return tipo;
-    }
-
-    public void setTipo(int tipo)
-    {
-        this.tipo = tipo;
-    }
-
-    public Date getFecha_inicio()
-    {
-        return fecha_inicio;
-    }
-
-    public void setFecha_inicio(Date fecha_inicio)
-    {
-        this.fecha_inicio = fecha_inicio;
-    }
-
-    public Date getFecha_final()
-    {
-        return fecha_final;
-    }
-
-    public void setFecha_final(Date fecha_final)
-    {
-        this.fecha_final = fecha_final;
+    public void setIdCarrera(int idCarrera) {
+        this.idCarrera = idCarrera;
     }
 
     @Override
-    public String toString()
-    {
-        return "Semestres{" +
-                "idCiclo=" + idCiclo +
-                ", nombre='" + nombre + '\'' +
-                ", tipo=" + tipo +
-                ", fecha_inicio=" + fecha_inicio +
-                ", fecha_final=" + fecha_final +
-                '}';
+    public String toString() {
+        return "Semestre " + numero;
     }
 }

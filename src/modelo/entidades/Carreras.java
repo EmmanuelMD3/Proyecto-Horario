@@ -20,6 +20,12 @@ public class Carreras
         this.descripcion = descripcion;
     }
 
+    public Carreras(int idCarrera, String nombre)
+    {
+        this.idCarrera = idCarrera;
+        this.nombre = nombre;
+    }
+
     public int getIdCarrera()
     {
         return idCarrera;
@@ -61,13 +67,7 @@ public class Carreras
     }
 
     @Override
-    public String toString()
-    {
-        return "Carreras{" +
-                "idCarrera=" + idCarrera +
-                ", nombre='" + nombre + '\'' +
-                ", clave='" + clave + '\'' +
-                ", descripcion='" + descripcion + '\'' +
-                '}';
+    public String toString() {
+        return nombre;
     }
 }

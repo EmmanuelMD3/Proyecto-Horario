@@ -2,120 +2,122 @@ package controlador.contVistas;
 
 import controlador.contLogica.HorarioControlador;
 import controlador.contLogica.HorarioVista;
-import dao.impl.DisponibilidadesDAOImpl;
-import dao.impl.ProfesorDAOImpl;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-
+import dao.impl.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import modelo.entidades.Disponibilidades;
-import modelo.entidades.Profesores;
+import modelo.entidades.*;
 import util.Validadores;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 
-import javax.swing.*;
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
 
-/**
- * FXML Controller class
- *
- * @author chemo
- */
-public class VtnPrincipalController implements Initializable
-{
+public class VtnPrincipalController implements Initializable {
 
-    @FXML
-    private ComboBox<String> comboEstado;
-    @FXML
-    private TextField txtNombre;
-    @FXML
-    private TextField txtApellidoPaterno;
-    @FXML
-    private TextField txtApellidoMaterno;
-    @FXML
-    private TextField txtIdentificador;
-    @FXML
-    private CheckBox checkAsignar;
-    @FXML
-    private CheckBox checkNoAsignar;
-    @FXML
-    private TableView<Profesores> tblBuscar;
-    @FXML
-    private TableColumn<Profesores, Integer> colId;
-    @FXML
-    private TableColumn<Profesores, String> colNombre;
-    @FXML
-    private TableColumn<Profesores, String> colApellidoPaterno;
-    @FXML
-    private TableColumn<Profesores, String> colApellidoMaterno;
-    @FXML
-    private TableColumn<Profesores, String> colIdentificador;
-    @FXML
-    private TableColumn<Profesores, Integer> colHorasDescarga;
-    @FXML
-    private TableColumn<Profesores, Boolean> colActivo;
-    @FXML
-    private Tab tabProfesores;
-    @FXML
-    private Button btnGuardarDisponibilidad;
-    @FXML
-    private TextField txtBuscar;
-    @FXML
-    private AnchorPane panelHorario;
-    private controlador.contLogica.HorarioControlador horarioControlador;
+    // ==========================
+    //   CAMPOS FXML
+    // ==========================
+
+    @FXML private ComboBox<String> comboEstado;
+    @FXML private TextField txtNombre;
+    @FXML private TextField txtApellidoPaterno;
+    @FXML private TextField txtApellidoMaterno;
+    @FXML private TextField txtIdentificador;
+    @FXML private CheckBox checkAsignar;
+    @FXML private CheckBox checkNoAsignar;
+
+    @FXML private TableView<Profesores> tblBuscar;
+    @FXML private TableColumn<Profesores, Integer> colId;
+    @FXML private TableColumn<Profesores, String> colNombre;
+    @FXML private TableColumn<Profesores, String> colApellidoPaterno;
+    @FXML private TableColumn<Profesores, String> colApellidoMaterno;
+    @FXML private TableColumn<Profesores, String> colIdentificador;
+    @FXML private TableColumn<Profesores, Boolean> colActivo;
+
+    @FXML private Tab tabProfesores;
+    @FXML private Button btnGuardarDisponibilidad;
+    @FXML private TextField txtBuscar;
+    @FXML private AnchorPane panelHorario;
+
+    @FXML private ComboBox<Carreras> comboCarreras;
+    @FXML private ComboBox<Semestres> comboSemestres;
+    @FXML private ComboBox<Materias> comboMaterias;
+
+    @FXML private TableView<ProfesorMateriaTemp> tablaMaterias;
+    @FXML private TableColumn<ProfesorMateriaTemp, String> colMateria;
+    @FXML private TableColumn<ProfesorMateriaTemp, String> colCarrera;
+    @FXML private TableColumn<ProfesorMateriaTemp, String> colSemestre;
 
     private Profesores profesorSeleccionado;
+    private HorarioControlador horarioControlador;
 
-    @FXML
-    private TextField txtBuscar1;
-
+    // ==========================
+    //    MÉTODO INICIAL
+    // ==========================
 
     @Override
-    public void initialize(URL url, ResourceBundle rb)
-    {
+    public void initialize(URL url, ResourceBundle rb) {
 
-        txtIdentificador.textProperty().addListener((obs, oldText, newText) ->
-        {
-            if (newText != null && !newText.matches("[A-Za-z0-9]*"))
-            {
-                txtIdentificador.setText(oldText.toUpperCase());
-            }
-            else
-            {
-                txtIdentificador.setText(newText.toUpperCase());
-            }
-        });
+        inicializarFiltrosTexto();
+        inicializarTablaProfesores();
+        inicializarEventosTabla();
+        //inicializarCombos();
 
+        cargarCarreras();
 
-        txtIdentificador.textProperty().addListener((obs, oldText, newText) ->
-        {
+        inicializarCombos();
+    }
+
+    // ===============================
+    //  INICIALIZACIONES
+    // ===============================
+
+    private void inicializarFiltrosTexto() {
+        txtIdentificador.textProperty().addListener((obs, oldText, newText) -> {
             if (newText != null)
-            {
                 txtIdentificador.setText(newText.toUpperCase());
-            }
         });
 
+        Validadores.aplicarFiltroSoloLetras(txtNombre);
+        Validadores.aplicarFiltroSoloLetras(txtApellidoPaterno);
+        Validadores.aplicarFiltroSoloLetras(txtApellidoMaterno);
 
-        tblBuscar.setRowFactory(tv ->
-        {
+        comboEstado.getItems().addAll("Activo", "Inactivo");
+        comboEstado.setValue("Seleccione una opción");
+    }
+
+    private void inicializarTablaProfesores() {
+
+        colId.setCellValueFactory(new PropertyValueFactory<>("idProfesor"));
+        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        colApellidoPaterno.setCellValueFactory(new PropertyValueFactory<>("apellidoP"));
+        colApellidoMaterno.setCellValueFactory(new PropertyValueFactory<>("apellidoM"));
+        colIdentificador.setCellValueFactory(new PropertyValueFactory<>("identificador"));
+        colActivo.setCellValueFactory(new PropertyValueFactory<>("activo"));
+
+        tabProfesores.setOnSelectionChanged(event -> {
+            if (tabProfesores.isSelected()) {
+                cargarProfesores();
+                cargarVistaHorario();
+            }
+        });
+    }
+
+    private void inicializarEventosTabla() {
+
+        tblBuscar.setRowFactory(tv -> {
             TableRow<Profesores> row = new TableRow<>();
 
-            row.setOnMouseClicked(event ->
-            {
-                if (!row.isEmpty() && event.getClickCount() == 2)
-                {
-
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() && event.getClickCount() == 2) {
                     profesorSeleccionado = row.getItem();
-
                     cargarDatosEnFormulario(profesorSeleccionado);
                 }
             });
@@ -123,252 +125,298 @@ public class VtnPrincipalController implements Initializable
             return row;
         });
 
+        tblBuscar.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
+            if (newSel == null) return;
 
-        tblBuscar.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) ->
-        {
-            if (newSel != null)
-            {
+            int idProfesor = newSel.getIdProfesor();
+            DisponibilidadesDAOImpl dao = new DisponibilidadesDAOImpl();
+            List<Disponibilidades> lista = dao.obtenerPorProfesor(idProfesor);
 
-                int idProfesor = newSel.getIdProfesor();
+            horarioControlador.mostrarDisponibilidadesProfesor(lista);
 
-                DisponibilidadesDAOImpl dao = new DisponibilidadesDAOImpl();
-                List<Disponibilidades> lista = dao.obtenerPorProfesor(idProfesor);
-
-                horarioControlador.mostrarDisponibilidadesProfesor(lista);
-
-                if (lista.isEmpty())
-                {
-                    btnGuardarDisponibilidad.setDisable(false);
-                    horarioControlador.setBloqueoEdicion(false);
-                    System.out.println("Profesor sin disponibilidad → puede registrar.");
-                }
-                else
-                {
-                    btnGuardarDisponibilidad.setDisable(true);
-                    horarioControlador.setBloqueoEdicion(true);
-                    System.out.println("Profesor YA tiene disponibilidad → edición bloqueada.");
-                }
-            }
-        });
-
-
-        comboEstado.getItems().addAll(
-                "Activo",
-                "Inactivo"
-        );
-        comboEstado.setValue("Seleccione una opción");
-
-        Validadores.aplicarFiltroSoloLetras(txtNombre);
-        Validadores.aplicarFiltroSoloLetras(txtApellidoPaterno);
-        Validadores.aplicarFiltroSoloLetras(txtApellidoMaterno);
-        Validadores.configurarCheckBoxes(checkAsignar, checkNoAsignar);
-
-        colId.setCellValueFactory(new PropertyValueFactory<>("idProfesor"));
-        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        colApellidoPaterno.setCellValueFactory(new PropertyValueFactory<>("apellidoP"));
-        colApellidoMaterno.setCellValueFactory(new PropertyValueFactory<>("apellidoM"));
-        colIdentificador.setCellValueFactory(new PropertyValueFactory<>("identificador"));
-        colHorasDescarga.setCellValueFactory(new PropertyValueFactory<>("horasDescarga"));
-        colActivo.setCellValueFactory(new PropertyValueFactory<>("activo"));
-
-        inicializaTabla();
-    }
-
-    private void inicializaTabla()
-    {
-        tabProfesores.setOnSelectionChanged(event ->
-        {
-            if (tabProfesores.isSelected())
-            {
-                cargarProfesores();
-                cargarVistaHorario();
-            }
+            btnGuardarDisponibilidad.setDisable(!lista.isEmpty());
+            horarioControlador.setBloqueoEdicion(!lista.isEmpty());
         });
     }
+
+    private void inicializarCombos() {
+
+        comboCarreras.setOnAction(e -> {
+            Carreras c = comboCarreras.getValue();
+            if (c != null) cargarSemestres(c.getIdCarrera());
+        });
+
+        comboSemestres.setOnAction(e -> {
+            Semestres s = comboSemestres.getValue();
+            Carreras c = comboCarreras.getValue();
+
+            if (s != null && c != null)
+                cargarMaterias(s.getIdSemestre(), c.getIdCarrera());
+        });
+    }
+
+    // ===============================
+    //  ACCIONES
+    // ===============================
 
     @FXML
-    private void Aceptar()
-    {
-        try
-        {
-            int hrsdescarga = 0;
+    private void Aceptar() {
+
+        try {
+
             String nombre = txtNombre.getText().trim();
             String apellidoP = txtApellidoPaterno.getText().trim();
             String apellidoM = txtApellidoMaterno.getText().trim();
             String identificador = txtIdentificador.getText().trim();
-            String estadotxt = comboEstado.getValue();
+            String estadoTxt = comboEstado.getValue();
 
-            boolean asignar = checkAsignar.isSelected();
-            boolean noAsignar = checkNoAsignar.isSelected();
-
-            if (nombre.isEmpty() || apellidoP.isEmpty() || apellidoM.isEmpty() || identificador.isEmpty())
-            {
-                mostrarAlerta("Campos vacíos", "Por favor completa todos los campos de texto.");
+            if (nombre.isEmpty() || apellidoP.isEmpty() || apellidoM.isEmpty() || identificador.isEmpty()) {
+                mostrarAlerta("Campos vacíos", "Por favor completa todos los campos.");
                 return;
             }
 
-            if (!Validadores.soloLetrasValidas(nombre)
-                    || !Validadores.soloLetrasValidas(apellidoP)
-                    || !Validadores.soloLetrasValidas(apellidoM))
-            {
-                mostrarAlerta("Formato inválido", "Los nombres y apellidos solo deben contener letras.");
+            if (!identificador.matches("[A-Za-z0-9]+")) {
+                mostrarAlerta("Identificador inválido", "Debe contener solo letras y números.");
                 return;
             }
 
-            if (!identificador.matches("[A-Za-z0-9]+"))
-            {
-                mostrarAlerta("Identificador inválido", "El identificador debe contener solo letras y números (A-Z, 0-9).");
-                return;
-            }
+            boolean estado = estadoTxt.equals("Activo");
 
-            if (estadotxt == null || estadotxt.equals("Seleccione una opción"))
-            {
-                mostrarAlerta("Estado inválido", "Debes seleccionar un estado válido (Activo/Inactivo).");
-                return;
-            }
+            Profesores nuevo = new Profesores(0, nombre, apellidoP, apellidoM, identificador, estado);
 
-            if (!asignar && !noAsignar)
-            {
-                mostrarAlerta("Selección requerida", "Debes seleccionar si el profesor se asignará o no.");
-                return;
-            }
-            if (asignar)
-            {
-                hrsdescarga = 1;
-            }
+            ProfesorDAOImpl dao = new ProfesorDAOImpl();
 
-            boolean estado = estadotxt.equals("Activo");
-
-            Profesores nuevoProfesor = new Profesores(0, nombre, apellidoP, apellidoM, identificador, hrsdescarga, estado);
-            ProfesorDAOImpl daoProfesor = new ProfesorDAOImpl();
-
-            if (daoProfesor.agregarProfesor(nuevoProfesor))
-            {
+            if (dao.agregarProfesor(nuevo)) {
                 mostrarAlerta("Éxito", "Profesor agregado correctamente.");
                 cargarProfesores();
                 limpiarCampos();
             }
-            else
-            {
-                mostrarAlerta("Error", "No se pudo agregar el profesor.");
-            }
 
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             mostrarAlerta("Error inesperado", e.getMessage());
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void guardarDisponibilidad()
-    {
-        Profesores seleccionado = tblBuscar.getSelectionModel().getSelectedItem();
+    private void agregarMateria() {
 
-        if (seleccionado == null)
-        {
-            mostrarAlerta("Seleccione un profesor", "Debe seleccionar un profesor antes de guardar disponibilidad.");
+        if (profesorSeleccionado == null) {
+            mostrarAlerta("Seleccione profesor", "Debe seleccionar un profesor antes de asignar materias.");
             return;
         }
 
-        int idProfesor = seleccionado.getIdProfesor();
+        Carreras carrera = comboCarreras.getValue();
+        Semestres semestre = comboSemestres.getValue();
+        Materias materia = comboMaterias.getValue();
 
-        if (horarioControlador != null)
-        {
-            horarioControlador.guardarSeleccionadas(idProfesor);
-
-            DisponibilidadesDAOImpl dao = new DisponibilidadesDAOImpl();
-            List<Disponibilidades> lista = dao.obtenerPorProfesor(idProfesor);
-
-            horarioControlador.mostrarDisponibilidadesProfesor(lista);
-
-            btnGuardarDisponibilidad.setDisable(true);
-            horarioControlador.setBloqueoEdicion(true);
-
-            System.out.println("Disponibilidad guardada → Edición bloqueada.");
+        if (carrera == null || semestre == null || materia == null) {
+            mostrarAlerta("Campos incompletos", "Debe seleccionar carrera, semestre y materia.");
+            return;
         }
-        else
+
+        ProfesorMateriaTemp registro = new ProfesorMateriaTemp(materia, carrera, semestre);
+
+        tablaMaterias.getItems().add(registro);
+    }
+
+    @FXML
+    private void guardarDisponibilidad() {
+
+        Profesores seleccionado = tblBuscar.getSelectionModel().getSelectedItem();
+        if (seleccionado == null) {
+            mostrarAlerta("Seleccione un profesor", "Debe seleccionar un profesor.");
+            return;
+        }
+
+        horarioControlador.guardarSeleccionadas(seleccionado.getIdProfesor());
+        btnGuardarDisponibilidad.setDisable(true);
+    }
+
+    // ===============================
+    //  CARGA DE DATOS
+    // ===============================
+
+    private void cargarProfesores() {
+
+        ProfesorDAOImpl dao = new ProfesorDAOImpl();
+
+        ObservableList<Profesores> lista = FXCollections.observableArrayList(dao.listarProfesores());
+
+        FilteredList<Profesores> filtro = new FilteredList<>(lista, p -> true);
+
+        txtBuscar.textProperty().addListener((obs, oldValue, newValue) -> {
+            filtro.setPredicate(p ->
+            {
+
+                if (newValue == null || newValue.isEmpty())
+                    return true;
+
+                String f = newValue.toLowerCase();
+
+                return p.getNombre().toLowerCase().contains(f)
+                        || p.getApellidoP().toLowerCase().contains(f)
+                        || p.getApellidoM().toLowerCase().contains(f)
+                        || p.getIdentificador().toLowerCase().contains(f);
+            });
+        });
+
+        SortedList<Profesores> ordenada = new SortedList<>(filtro);
+        ordenada.comparatorProperty().bind(tblBuscar.comparatorProperty());
+
+        tblBuscar.setItems(ordenada);
+    }
+
+    private void cargarVistaHorario()
+    {
+
+        try {
+            HorarioVista vista = new HorarioVista();
+            horarioControlador = new HorarioControlador(vista);
+
+            panelHorario.getChildren().setAll(vista.getRoot());
+
+        } catch (Exception e)
         {
-            System.err.println("El controlador de horario no está inicializado.");
+            e.printStackTrace();
         }
     }
 
+    private void cargarDatosEnFormulario(Profesores profesor)
+    {
+
+        txtNombre.setText(profesor.getNombre());
+        txtApellidoPaterno.setText(profesor.getApellidoP());
+        txtApellidoMaterno.setText(profesor.getApellidoM());
+        txtIdentificador.setText(profesor.getIdentificador());
+        comboEstado.setValue(profesor.isActivo() ? "Activo" : "Inactivo");
+    }
+
+    private void cargarCarreras()
+    {
+        CarreraDAOImpl dao = new CarreraDAOImpl();
+        comboCarreras.getItems().setAll(dao.listarCarreras());
+    }
+
+    private void cargarSemestres(int idCarrera)
+    {
+        SemestreDAOImpl dao = new SemestreDAOImpl();
+        comboSemestres.getItems().setAll(dao.listarPorCarrera(idCarrera));
+    }
+
+    private void cargarMaterias(int idSemestre, int idCarrera)
+    {
+        MateriaDAOImpl dao = new MateriaDAOImpl();
+        comboMaterias.getItems().setAll(dao.listarPorSemestreYCarrera(idSemestre, idCarrera));
+    }
+
+    // ===============================
+    //  UTILIDADES
+    // ===============================
+
+    private void mostrarAlerta(String titulo, String mensaje)
+    {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle(titulo);
+        a.setHeaderText(null);
+        a.setContentText(mensaje);
+        a.showAndWait();
+    }
+
+    private void limpiarCampos()
+    {
+        txtNombre.clear();
+        txtApellidoPaterno.clear();
+        txtApellidoMaterno.clear();
+        txtIdentificador.clear();
+        checkAsignar.setSelected(false);
+        checkNoAsignar.setSelected(false);
+    }
 
     @FXML
     private void Modificar()
     {
+
+        // 1) Validar que haya profesor seleccionado
         if (profesorSeleccionado == null)
         {
             mostrarAlerta("Sin selección", "Debe hacer doble clic en un profesor para modificarlo.");
             return;
         }
 
+        // 2) Obtener datos del formulario
         String nombreNuevo = txtNombre.getText().trim();
         String apellidoPNuevo = txtApellidoPaterno.getText().trim();
         String apellidoMNuevo = txtApellidoMaterno.getText().trim();
         String identificadorNuevo = txtIdentificador.getText().trim();
         boolean activoNuevo = comboEstado.getValue().equals("Activo");
-        int horasDescargaNueva = checkAsignar.isSelected() ? 1 : 0;
 
-        if (nombreNuevo.isEmpty() || apellidoPNuevo.isEmpty() || apellidoMNuevo.isEmpty() || identificadorNuevo.isEmpty())
+        // 3) Validar campos vacíos
+        if (nombreNuevo.isEmpty() || apellidoPNuevo.isEmpty()
+                || apellidoMNuevo.isEmpty() || identificadorNuevo.isEmpty())
         {
             mostrarAlerta("Campos incompletos", "Debe llenar todos los campos antes de modificar.");
             return;
         }
 
+        // 4) Validar letras
         if (!Validadores.soloLetrasValidas(nombreNuevo) ||
                 !Validadores.soloLetrasValidas(apellidoPNuevo) ||
                 !Validadores.soloLetrasValidas(apellidoMNuevo))
         {
+
             mostrarAlerta("Formato inválido", "Nombre y apellidos deben contener solo letras.");
             return;
         }
 
+        // 5) Identificador alfanumérico
         if (!identificadorNuevo.matches("[A-Za-z0-9]+"))
         {
             mostrarAlerta("Identificador inválido", "Debe contener solo letras y números.");
             return;
         }
 
+        // 6) Detectar cambios
         StringBuilder cambios = new StringBuilder("Cambios detectados:\n\n");
 
         agregarCambio(cambios, "Nombre", profesorSeleccionado.getNombre(), nombreNuevo);
         agregarCambio(cambios, "Apellido Paterno", profesorSeleccionado.getApellidoP(), apellidoPNuevo);
         agregarCambio(cambios, "Apellido Materno", profesorSeleccionado.getApellidoM(), apellidoMNuevo);
         agregarCambio(cambios, "Identificador", profesorSeleccionado.getIdentificador(), identificadorNuevo);
-        agregarCambio(cambios, "Estado", profesorSeleccionado.isActivo() ? "Activo" : "Inactivo",
+        agregarCambio(cambios, "Estado",
+                profesorSeleccionado.isActivo() ? "Activo" : "Inactivo",
                 activoNuevo ? "Activo" : "Inactivo");
-        agregarCambio(cambios, "Horas de Descarga",
-                profesorSeleccionado.getHorasDescarga() == 1 ? "Asignar" : "No Asignar",
-                horasDescargaNueva == 1 ? "Asignar" : "No Asignar");
 
+        // Si no hubo cambios
         if (cambios.toString().equals("Cambios detectados:\n\n"))
         {
             mostrarAlerta("Sin cambios", "No modificaste ningún dato.");
             return;
         }
 
+        // 7) Confirmación
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmar modificación");
         alert.setHeaderText("¿Deseas modificar este profesor?");
         alert.setContentText(cambios.toString());
 
-        if (alert.showAndWait().get() != ButtonType.OK)
-        {
+        if (alert.showAndWait().get() != ButtonType.OK) {
             return;
         }
 
+        // 8) Aplicar cambios reales
         profesorSeleccionado.setNombre(nombreNuevo);
         profesorSeleccionado.setApellidoP(apellidoPNuevo);
         profesorSeleccionado.setApellidoM(apellidoMNuevo);
         profesorSeleccionado.setIdentificador(identificadorNuevo);
         profesorSeleccionado.setActivo(activoNuevo);
-        profesorSeleccionado.setHorasDescarga(horasDescargaNueva);
 
+        // 9) Guardar en BD
         ProfesorDAOImpl dao = new ProfesorDAOImpl();
         dao.actualizarProfesor(profesorSeleccionado);
 
         mostrarAlerta("Realizado", "Los datos del profesor fueron modificados.");
+
         cargarProfesores();
     }
 
@@ -383,143 +431,10 @@ public class VtnPrincipalController implements Initializable
         }
     }
 
-
     @FXML
     private void Cancelar()
     {
         limpiarCampos();
     }
 
-    private void mostrarAlerta(String titulo, String mensaje)
-    {
-        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
-    }
-
-    private void limpiarCampos()
-    {
-        txtNombre.clear();
-        txtApellidoPaterno.clear();
-        txtApellidoMaterno.clear();
-        txtIdentificador.clear();
-        //comboEstado.setValue("Seleccione una opción");
-        checkAsignar.setSelected(false);
-        checkNoAsignar.setSelected(false);
-    }
-
-    private void cargarProfesores()
-    {
-        ProfesorDAOImpl daoProfesor = new ProfesorDAOImpl();
-        ObservableList<Profesores> listaProfesores = FXCollections.observableArrayList(daoProfesor.listarProfesores());
-
-        FilteredList<Profesores> filtro = new FilteredList<>(listaProfesores, p -> true);
-
-        txtBuscar.textProperty().addListener((observable, oldValue, newValue) ->
-        {
-            filtro.setPredicate(profesor ->
-            {
-                if (newValue == null || newValue.isEmpty())
-                {
-                    return true;
-                }
-
-                String lowerCaseFilter = newValue.toLowerCase();
-
-                if (profesor.getNombre().toLowerCase().contains(lowerCaseFilter))
-                {
-                    return true;
-                }
-                else
-                    if (profesor.getApellidoP().toLowerCase().contains(lowerCaseFilter))
-                    {
-                        return true;
-                    }
-                    else
-                        if (profesor.getApellidoM().toLowerCase().contains(lowerCaseFilter))
-                        {
-                            return true;
-                        }
-                        else
-                            if (profesor.getIdentificador().toLowerCase().contains(lowerCaseFilter))
-                            {
-                                return true;
-                            }
-                return false;
-            });
-        });
-
-        SortedList<Profesores> ordenada = new SortedList<>(filtro);
-        ordenada.comparatorProperty().bind(tblBuscar.comparatorProperty());
-        tblBuscar.setItems(ordenada);
-    }
-
-    private void cargarVistaHorario()
-    {
-        try
-        {
-            controlador.contLogica.HorarioVista vistaHorario = new controlador.contLogica.HorarioVista();
-            horarioControlador = new controlador.contLogica.HorarioControlador(vistaHorario);
-
-            panelHorario.getChildren().clear();
-            panelHorario.getChildren().add(vistaHorario.getRoot());
-
-            AnchorPane.setTopAnchor(vistaHorario.getRoot(), 0.0);
-            AnchorPane.setBottomAnchor(vistaHorario.getRoot(), 0.0);
-            AnchorPane.setLeftAnchor(vistaHorario.getRoot(), 0.0);
-            AnchorPane.setRightAnchor(vistaHorario.getRoot(), 0.0);
-
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            System.err.println("Error al cargar horario: " + e.getMessage());
-        }
-    }
-
-    private void cargarDatosEnFormulario(Profesores profesor)
-    {
-        txtNombre.setText(profesor.getNombre());
-        txtApellidoPaterno.setText(profesor.getApellidoP());
-        txtApellidoMaterno.setText(profesor.getApellidoM());
-        txtIdentificador.setText(profesor.getIdentificador());
-
-        comboEstado.setValue(profesor.isActivo() ? "Activo" : "Inactivo");
-
-        if (profesor.getHorasDescarga() == 1)
-        {
-            checkAsignar.setSelected(true);
-            checkNoAsignar.setSelected(false);
-        }
-        else
-        {
-            checkAsignar.setSelected(false);
-            checkNoAsignar.setSelected(true);
-        }
-    }
-
-
-    private void mostrarDialogoModificar(Profesores profesor)
-    {
-
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Modificar Profesor");
-        alert.setHeaderText("¿Deseas modificar los datos de este profesor?");
-        alert.setContentText(profesor.getNombre() + " " + profesor.getApellidoP());
-
-        ButtonType botonSi = new ButtonType("Sí");
-        ButtonType botonNo = new ButtonType("No");
-
-        alert.getButtonTypes().setAll(botonSi, botonNo);
-
-        alert.showAndWait().ifPresent(tipo ->
-        {
-            if (tipo == botonSi)
-            {
-                profesorSeleccionado = profesor;
-                cargarDatosEnFormulario(profesor);
-            }
-        });
-    }
 }
