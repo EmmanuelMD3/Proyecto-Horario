@@ -9,6 +9,11 @@ CREATE TABLE Carreras (
                           descripcion VARCHAR(255)
 ) ENGINE=InnoDB;
 
+INSERT INTO Carreras VALUES(1,'Licenciatura en Psicologia Industrial','LPI','Licenciatura en Psicologia Industrial');
+INSERT INTO Carreras VALUES(2,'Ingenieria en Gestion Empresarial','IGE','Ingenieria en Gestion Empresarial');
+INSERT INTO Carreras VALUES(3,'Ingenieria en Mecanica Automotriz','IMA','Ingenieria en Mecanica Automotriz');
+SELECT nombre FROM Carreras;
+
 CREATE TABLE Ciclos (
                         idCiclo INT AUTO_INCREMENT PRIMARY KEY,
                         nombre VARCHAR(50) NOT NULL,
@@ -17,6 +22,9 @@ CREATE TABLE Ciclos (
                         fecha_fin DATE,
                         UNIQUE KEY uq_nombre (nombre)
 ) ENGINE=InnoDB;
+
+INSERT INTO Ciclos (idCiclo, nombre, tipo, fecha_inicio, fecha_fin) VALUES (1, '2025/2026', 'par', '2026-01-01', '2026-07-01');
+SELECT * FROM Ciclos;
 
 CREATE TABLE Semestres (
                            idSemestre INT AUTO_INCREMENT PRIMARY KEY,
@@ -49,9 +57,10 @@ CREATE TABLE Profesores (
                             apellidoP VARCHAR(50),
                             apellidoM VARCHAR(50),
                             identificador VARCHAR(50) NOT NULL,
-                            horas_descarga INT DEFAULT 0,
                             activo BOOLEAN DEFAULT TRUE
 ) ENGINE=InnoDB;
+
+SELECT * FROM Profesores;
 
 CREATE TABLE Materias_Profesor (
                                    idMateriaProfesor INT AUTO_INCREMENT PRIMARY KEY,
