@@ -1,91 +1,109 @@
-DROP DATABASE IF EXISTS Proyecto_Horarios;
-CREATE DATABASE Proyecto_Horarios CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE Proyecto_Horarios;
-
+DROP DATABASE IF EXISTS ProyectoHorarios;
+CREATE DATABASE ProyectoHorarios CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE ProyectoHorarios;
+-- ============================================
+-- 1. CARRERAS Y MAPA CURRICULAR (FIJO)
+-- ============================================
 CREATE TABLE Carreras (
                           idCarrera INT AUTO_INCREMENT PRIMARY KEY,
-                          nombre VARCHAR(100) NOT NULL,
-                          clave VARCHAR(20) UNIQUE,
-                          descripcion VARCHAR(255)
-) ENGINE=InnoDB;
-
-CREATE TABLE Ciclos (
-                        idCiclo INT AUTO_INCREMENT PRIMARY KEY,
-                        nombre VARCHAR(50) NOT NULL,
-                        tipo ENUM('par','impar') NOT NULL,
-                        fecha_inicio DATE,
-                        fecha_fin DATE,
-                        UNIQUE KEY uq_nombre (nombre)
-) ENGINE=InnoDB;
+                          nombre VARCHAR(120) NOT NULL,
+                          clave VARCHAR(20) UNIQUE NOT NULL
+);
 
 CREATE TABLE Semestres (
                            idSemestre INT AUTO_INCREMENT PRIMARY KEY,
-                           numero INT NOT NULL,
-                           activo BOOLEAN DEFAULT TRUE,
-                           idCiclo INT,
-                           idCarrera INT,
-                           INDEX ix_ciclo (idCiclo),
-                           INDEX ix_carrera (idCarrera),
-                           CONSTRAINT fk_semestres_ciclos FOREIGN KEY (idCiclo) REFERENCES Ciclos(idCiclo)
-                               ON UPDATE CASCADE ON DELETE SET NULL,
-                           CONSTRAINT fk_semestres_carreras FOREIGN KEY (idCarrera) REFERENCES Carreras(idCarrera)
-                               ON UPDATE CASCADE ON DELETE SET NULL
-) ENGINE=InnoDB;
+                           numero INT NOT NULL CHECK (numero BETWEEN 1 AND 10)
+);
 
 CREATE TABLE Materias (
                           idMateria INT AUTO_INCREMENT PRIMARY KEY,
-                          nombre VARCHAR(100) NOT NULL,
+                          nombre VARCHAR(120) NOT NULL,
+                          idCarrera INT NOT NULL,
                           idSemestre INT NOT NULL,
-                          horas_semana INT NOT NULL,
-                          UNIQUE KEY uq_nombre_semestre (nombre, idSemestre),
-                          INDEX ix_semestre (idSemestre),
-                          CONSTRAINT fk_materias_semestres FOREIGN KEY (idSemestre) REFERENCES Semestres(idSemestre)
-                              ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB;
+                          horas_semana INT NOT NULL CHECK (horas_semana BETWEEN 1 AND 10),
+                          UNIQUE(nombre, idCarrera, idSemestre),
+                          FOREIGN KEY (idCarrera) REFERENCES Carreras(idCarrera) ON DELETE CASCADE,
+                          FOREIGN KEY (idSemestre) REFERENCES Semestres(idSemestre) ON DELETE CASCADE
+);
 
-CREATE TABLE Profesores (
-                            idProfesor INT AUTO_INCREMENT PRIMARY KEY,
-                            nombre VARCHAR(100) NOT NULL,
-                            apellidoP VARCHAR(50),
-                            apellidoM VARCHAR(50),
-                            identificador VARCHAR(50) NOT NULL,
-                            horas_descarga INT DEFAULT 0,
-                            activo BOOLEAN DEFAULT TRUE
-) ENGINE=InnoDB;
+-- ============================================
+-- 2. CICLOS Y GRUPOS (DINÁMICO)
+-- ============================================
 
-CREATE TABLE Materias_Profesor (
-                                   idMateriaProfesor INT AUTO_INCREMENT PRIMARY KEY,
-                                   idProfesor INT NOT NULL,
-                                   idMateria INT NOT NULL,
-                                   preferencia INT DEFAULT 1,
-                                   UNIQUE KEY uq_prof_materia (idProfesor, idMateria),
-                                   CONSTRAINT fk_matprof_prof FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor)
-                                       ON UPDATE CASCADE ON DELETE CASCADE,
-                                   CONSTRAINT fk_matprof_mat FOREIGN KEY (idMateria) REFERENCES Materias(idMateria)
-                                       ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB;
-
-CREATE TABLE Disponibilidades (
-                                  idDisponibilidad INT AUTO_INCREMENT PRIMARY KEY,
-                                  idProfesor INT NOT NULL,
-                                  dia ENUM('Lunes','Martes','Miércoles','Jueves','Viernes','Sabado') NOT NULL,
-                                  hora_inicio TIME NOT NULL,
-                                  hora_fin TIME NOT NULL,
-                                  CONSTRAINT fk_dispon_prof FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor)
-                                      ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB;
+CREATE TABLE Ciclos (
+                        idCiclo INT AUTO_INCREMENT PRIMARY KEY,
+                        nombre VARCHAR(20) NOT NULL UNIQUE, -- Ejemplo: 2025-2026
+                        tipo ENUM('par','impar') NOT NULL,
+                        fecha_inicio DATE,
+                        fecha_fin DATE
+);
 
 CREATE TABLE Grupos (
                         idGrupo INT AUTO_INCREMENT PRIMARY KEY,
-                        nombre VARCHAR(50) NOT NULL,
+                        nombre VARCHAR(20) NOT NULL,         -- Ej: "1-A", "3-A"
+                        idCarrera INT NOT NULL,
                         idSemestre INT NOT NULL,
                         idCiclo INT NOT NULL,
-                        idCarrera INT NOT NULL,
-                        UNIQUE KEY uq_grupo_ciclo (nombre, idCiclo),
-                        CONSTRAINT fk_grupos_sem FOREIGN KEY (idSemestre) REFERENCES Semestres(idSemestre),
-                        CONSTRAINT fk_grupos_cic FOREIGN KEY (idCiclo) REFERENCES Ciclos(idCiclo),
-                        CONSTRAINT fk_grupos_car FOREIGN KEY (idCarrera) REFERENCES Carreras(idCarrera)
-) ENGINE=InnoDB;
+                        UNIQUE(nombre, idCiclo),
+                        FOREIGN KEY (idCarrera) REFERENCES Carreras(idCarrera),
+                        FOREIGN KEY (idSemestre) REFERENCES Semestres(idSemestre),
+                        FOREIGN KEY (idCiclo) REFERENCES Ciclos(idCiclo)
+);
+
+-- ============================================
+-- 3. PROFESORES
+-- ============================================
+
+CREATE TABLE Profesores (
+                            idProfesor INT AUTO_INCREMENT PRIMARY KEY,
+                            nombre VARCHAR(120) NOT NULL,
+                            apellidoP VARCHAR(60)NOT NULL,
+                            apellidoM VARCHAR(60)NOT NULL,
+                            identificador VARCHAR(50),
+                            activo BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE Disponibilidad (
+                                idDisponibilidad INT AUTO_INCREMENT PRIMARY KEY,
+                                idProfesor INT NOT NULL,
+                                dia ENUM('Lunes','Martes','Miercoles','Jueves','Viernes','Sabado') NOT NULL,
+                                hora_inicio TIME NOT NULL,
+                                hora_fin TIME NOT NULL,
+                                FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor) ON DELETE CASCADE
+);
+
+CREATE TABLE MateriasProfesor (
+                                  idMatProf INT AUTO_INCREMENT PRIMARY KEY,
+                                  idProfesor INT NOT NULL,
+                                  idMateria INT NOT NULL,
+                                  preferencia INT DEFAULT 1, -- opcional para luego
+                                  UNIQUE(idProfesor, idMateria),
+                                  FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor) ON DELETE CASCADE,
+                                  FOREIGN KEY (idMateria) REFERENCES Materias(idMateria) ON DELETE CASCADE
+);
+
+-- ============================================
+-- 4. HORAS DE DESCARGA
+-- ============================================
+
+CREATE TABLE Descargas (
+                           idDescarga INT AUTO_INCREMENT PRIMARY KEY,
+                           nombre VARCHAR(120) NOT NULL,
+                           horas_semana INT NOT NULL CHECK(horas_semana BETWEEN 1 AND 10)
+);
+
+CREATE TABLE DescargaProfesor (
+                                  idDescargaProfesor INT AUTO_INCREMENT PRIMARY KEY,
+                                  idProfesor INT NOT NULL,
+                                  idDescarga INT NOT NULL,
+                                  horas_asignadas INT NOT NULL CHECK(horas_asignadas BETWEEN 1 AND 10),
+                                  FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor),
+                                  FOREIGN KEY (idDescarga) REFERENCES Descargas(idDescarga)
+);
+
+-- ============================================
+-- 5. ASIGNACIONES Y HORARIOS GENERADOS
+-- ============================================
 
 CREATE TABLE Asignaciones (
                               idAsignacion INT AUTO_INCREMENT PRIMARY KEY,
@@ -93,65 +111,20 @@ CREATE TABLE Asignaciones (
                               idMateria INT NOT NULL,
                               idGrupo INT NOT NULL,
                               horas_asignadas INT NOT NULL,
-                              UNIQUE KEY uq_asig (idProfesor, idMateria, idGrupo),
-                              CONSTRAINT fk_asig_prof FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor),
-                              CONSTRAINT fk_asig_mat FOREIGN KEY (idMateria) REFERENCES Materias(idMateria),
-                              CONSTRAINT fk_asig_gru FOREIGN KEY (idGrupo) REFERENCES Grupos(idGrupo)
-) ENGINE=InnoDB;
+                              UNIQUE(idProfesor, idMateria, idGrupo),
+                              FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor),
+                              FOREIGN KEY (idMateria) REFERENCES Materias(idMateria),
+                              FOREIGN KEY (idGrupo) REFERENCES Grupos(idGrupo)
+);
 
-CREATE TABLE Descargas (
-                           idDescarga INT AUTO_INCREMENT PRIMARY KEY,
-                           nombre VARCHAR(100) NOT NULL,
-                           descripcion VARCHAR(255),
-                           horas_semana INT NOT NULL,
-                           idCarrera INT,
-                           CONSTRAINT fk_descarga_carrera FOREIGN KEY (idCarrera) REFERENCES Carreras(idCarrera)
-                               ON UPDATE CASCADE ON DELETE SET NULL
-) ENGINE=InnoDB;
-
-CREATE TABLE Asignacion_Descarga (
-                                     idAsigDescarga INT AUTO_INCREMENT PRIMARY KEY,
-                                     idProfesor INT NOT NULL,
-                                     idDescarga INT NOT NULL,
-                                     idGrupo INT,
-                                     horas_asignadas INT NOT NULL,
-                                     CONSTRAINT fk_asigd_prof FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor),
-                                     CONSTRAINT fk_asigd_desc FOREIGN KEY (idDescarga) REFERENCES Descargas(idDescarga),
-                                     CONSTRAINT fk_asigd_gru FOREIGN KEY (idGrupo) REFERENCES Grupos(idGrupo)
-) ENGINE=InnoDB;
-
-CREATE TABLE Horarios_Generados (
-                                    idHorario INT AUTO_INCREMENT PRIMARY KEY,
-                                    idAsignacion INT,
-                                    idAsigDescarga INT,
-                                    dia ENUM('Lunes','Martes','Miércoles','Jueves','Viernes') NOT NULL,
-                                    hora_inicio TIME NOT NULL,
-                                    hora_fin TIME NOT NULL,
-                                    aula VARCHAR(50),
-                                    tipo_bloque ENUM('CLASE','DESCARGA') DEFAULT 'CLASE',
-                                    estado ENUM('PENDIENTE','VALIDADO','MODIFICADO') DEFAULT 'PENDIENTE',
-                                    CONSTRAINT fk_horario_asig FOREIGN KEY (idAsignacion) REFERENCES Asignaciones(idAsignacion)
-                                        ON UPDATE CASCADE ON DELETE SET NULL,
-                                    CONSTRAINT fk_horario_desc FOREIGN KEY (idAsigDescarga) REFERENCES Asignacion_Descarga(idAsigDescarga)
-                                        ON UPDATE CASCADE ON DELETE SET NULL
-) ENGINE=InnoDB;
-
-CREATE TABLE Reglas_Horarias (
-                                 idRegla INT AUTO_INCREMENT PRIMARY KEY,
-                                 clave VARCHAR(100) NOT NULL,
-                                 descripcion VARCHAR(255),
-                                 valor VARCHAR(100) NOT NULL,
-                                 UNIQUE KEY uq_clave (clave)
-) ENGINE=InnoDB;
-
-CREATE TABLE Profesor_Descarga (
-                                   idProfesor INT NOT NULL,
-                                   idDescarga INT NOT NULL,
-                                   horas_asignadas INT NOT NULL,
-                                   PRIMARY KEY (idProfesor, idDescarga),
-                                   FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor)
-                                       ON UPDATE CASCADE ON DELETE CASCADE,
-                                   FOREIGN KEY (idDescarga) REFERENCES Descargas(idDescarga)
-                                       ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB;
-
+CREATE TABLE Horarios (
+                          idHorario INT AUTO_INCREMENT PRIMARY KEY,
+                          idAsignacion INT,
+                          idProfesor INT,
+                          dia ENUM('Lunes','Martes','Miercoles','Jueves','Viernes') NOT NULL,
+                          hora_inicio TIME NOT NULL,
+                          hora_fin TIME NOT NULL,
+                          tipo ENUM('CLASE','DESCARGA') NOT NULL,
+                          FOREIGN KEY (idAsignacion) REFERENCES Asignaciones(idAsignacion),
+                          FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor)
+);

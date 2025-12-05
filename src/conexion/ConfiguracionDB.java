@@ -8,7 +8,7 @@ public class ConfiguracionDB
 {
     public static final String HOST = "localhost";
     public static final String PUERTO = "3306";
-    public static final String BASE_DATOS = "Proyecto_Horarios";
+    public static final String BASE_DATOS = "ProyectoHorarios";
     public static final String USUARIO = "root";
     public static final String CONTRASENIA = "Emmanuel360#";
     public static String getUrl()

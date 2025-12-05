@@ -160,8 +160,8 @@ public class VtnPrincipalController implements Initializable {
     // ===============================
 
     @FXML
-    private void Aceptar() {
-
+    private void Aceptar()
+    {
         try {
 
             String nombre = txtNombre.getText().trim();
@@ -192,7 +192,8 @@ public class VtnPrincipalController implements Initializable {
                 limpiarCampos();
             }
 
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             mostrarAlerta("Error inesperado", e.getMessage());
             e.printStackTrace();
         }
