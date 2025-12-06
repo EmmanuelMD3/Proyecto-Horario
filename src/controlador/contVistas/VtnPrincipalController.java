@@ -88,6 +88,10 @@ public class VtnPrincipalController implements Initializable
 
     @FXML
     private TableView<MateriasProfesorTemp> tablaMaterias;
+    @FXML
+    private Button agregarMateria;
+    @FXML
+    private Button guardarMaterias;
 
 
     // ==========================================
@@ -113,6 +117,7 @@ public class VtnPrincipalController implements Initializable
     private void inicializarTablaAsignaciones()
     {
         TableColumn<MateriasProfesorTemp, String> colNo = new TableColumn<>("No.");
+        colNo.setPrefWidth(40);
         colNo.setCellValueFactory(c ->
                 new ReadOnlyStringWrapper(String.valueOf(
                         materiasAsignadasTemp.indexOf(c.getValue()) + 1
@@ -120,20 +125,28 @@ public class VtnPrincipalController implements Initializable
         );
 
         TableColumn<MateriasProfesorTemp, String> colMateria = new TableColumn<>("Materia");
-        colMateria.setCellValueFactory(c -> new ReadOnlyStringWrapper(c.getValue().getNombreMateria()));
+        colMateria.setPrefWidth(220);
+        colMateria.setCellValueFactory(c ->
+                new ReadOnlyStringWrapper(c.getValue().getNombreMateria())
+        );
 
         TableColumn<MateriasProfesorTemp, String> colCarrera = new TableColumn<>("Carrera");
-        colCarrera.setCellValueFactory(c -> new ReadOnlyStringWrapper(c.getValue().getCarrera()));
+        colCarrera.setPrefWidth(180);
+        colCarrera.setCellValueFactory(c ->
+                new ReadOnlyStringWrapper(c.getValue().getCarrera())
+        );
 
         TableColumn<MateriasProfesorTemp, String> colSemestre = new TableColumn<>("Semestre");
-        colSemestre.setCellValueFactory(c -> new ReadOnlyStringWrapper(
-                String.valueOf(c.getValue().getSemestre())
-        ));
+        colSemestre.setPrefWidth(80);
+        colSemestre.setCellValueFactory(c ->
+                new ReadOnlyStringWrapper(String.valueOf(c.getValue().getSemestre()))
+        );
 
         tablaMaterias.getColumns().clear();
         tablaMaterias.getColumns().addAll(colNo, colMateria, colCarrera, colSemestre);
         tablaMaterias.setItems(materiasAsignadasTemp);
     }
+
 
     // ==========================================
     // INICIALIZAR FILTROS Y TABLAS
@@ -184,7 +197,8 @@ public class VtnPrincipalController implements Initializable
                 if (!row.isEmpty() && event.getClickCount() == 2)
                 {
                     profesorSeleccionado = row.getItem();
-                    profesorSeleccionadoId = profesorSeleccionado.getIdProfesor();  // ← AQUÍ
+                    profesorSeleccionadoId = profesorSeleccionado.getIdProfesor();
+
 
                     System.out.println("Profesor seleccionado (doble clic): " + profesorSeleccionadoId);
 
@@ -203,6 +217,8 @@ public class VtnPrincipalController implements Initializable
             // Esto funciona si seleccionas con 1 clic
             profesorSeleccionadoId = newSel.getIdProfesor();
             System.out.println("Profesor seleccionado (1 clic): " + profesorSeleccionadoId);
+
+            cargarMateriasProfesor(profesorSeleccionadoId);
 
             DisponibilidadesDAOImpl dao = new DisponibilidadesDAOImpl();
             List<Disponibilidades> lista = dao.obtenerPorProfesor(profesorSeleccionadoId);
@@ -464,13 +480,34 @@ public class VtnPrincipalController implements Initializable
             return;
         }
 
+        if (materiasAsignadasTemp.isEmpty())
+        {
+            mostrarAlerta("Error", "No hay materias para guardar.");
+            return;
+        }
+
         MateriaProfesorDAOImpl dao = new MateriaProfesorDAOImpl();
 
-        for (MateriasProfesorTemp m : materiasAsignadasTemp)
-            dao.insertar(profesorSeleccionadoId, m.getIdMateria());
+        boolean okTotal = true;
 
-        mostrarInfo("Materias asignadas correctamente.");
+        for (MateriasProfesorTemp m : materiasAsignadasTemp)
+        {
+            boolean ok = dao.insertar(profesorSeleccionadoId, m.getIdMateria());
+            if (!ok)
+                okTotal = false;
+        }
+
+        if (okTotal)
+            mostrarInfo("Materias guardadas correctamente.");
+        else
+            mostrarAlerta("Advertencia", "Algunas materias ya estaban asignadas o no se guardaron.");
+
+        cargarMateriasProfesor(profesorSeleccionadoId);
+
+        agregarMateria.setDisable(true);
+        guardarMaterias.setDisable(true);
     }
+
 
     // ==========================================
     // CARGA DE DATOS
@@ -576,4 +613,34 @@ public class VtnPrincipalController implements Initializable
     {
         limpiarCampos();
     }
+
+    private void cargarMateriasProfesor(int idProfesor)
+    {
+        MateriaProfesorDAOImpl dao = new MateriaProfesorDAOImpl();
+        List<MateriasProfesorTemp> lista = dao.listarMateriasPorProfesor(idProfesor);
+
+        materiasAsignadasTemp.clear();
+
+        if (!lista.isEmpty())
+        {
+            materiasAsignadasTemp.addAll(lista);
+
+            tablaMaterias.refresh();
+
+            // Bloquear registro porque ya tiene materias asignadas
+            agregarMateria.setDisable(true);
+            guardarMaterias.setDisable(true);
+        }
+        else
+        {
+            materiasAsignadasTemp.clear();
+            tablaMaterias.refresh();
+
+            // Activar porque NO tiene registro
+            agregarMateria.setDisable(false);
+            guardarMaterias.setDisable(false);
+        }
+    }
+
+
 }
