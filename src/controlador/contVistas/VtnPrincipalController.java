@@ -92,6 +92,8 @@ public class VtnPrincipalController implements Initializable
     private Button agregarMateria;
     @FXML
     private Button guardarMaterias;
+    @FXML
+    private Button eliminarMateria;
 
 
     // ==========================================
@@ -319,21 +321,18 @@ public class VtnPrincipalController implements Initializable
     private void Modificar()
     {
 
-        // 1) Validar que haya profesor seleccionado
         if (profesorSeleccionado == null)
         {
             mostrarAlerta("Sin selección", "Debe hacer doble clic en un profesor para modificarlo.");
             return;
         }
 
-        // 2) Obtener datos del formulario
         String nombreNuevo = txtNombre.getText().trim();
         String apellidoPNuevo = txtApellidoPaterno.getText().trim();
         String apellidoMNuevo = txtApellidoMaterno.getText().trim();
         String identificadorNuevo = txtIdentificador.getText().trim();
         boolean activoNuevo = comboEstado.getValue().equals("Activo");
 
-        // 3) Validar campos vacíos
         if (nombreNuevo.isEmpty() || apellidoPNuevo.isEmpty()
                 || apellidoMNuevo.isEmpty() || identificadorNuevo.isEmpty())
         {
@@ -341,7 +340,6 @@ public class VtnPrincipalController implements Initializable
             return;
         }
 
-        // 4) Validar letras
         if (!Validadores.soloLetrasValidas(nombreNuevo) ||
                 !Validadores.soloLetrasValidas(apellidoPNuevo) ||
                 !Validadores.soloLetrasValidas(apellidoMNuevo))
@@ -351,14 +349,12 @@ public class VtnPrincipalController implements Initializable
             return;
         }
 
-        // 5) Identificador alfanumérico
         if (!identificadorNuevo.matches("[A-Za-z0-9]+"))
         {
             mostrarAlerta("Identificador inválido", "Debe contener solo letras y números.");
             return;
         }
 
-        // 6) Detectar cambios
         StringBuilder cambios = new StringBuilder("Cambios detectados:\n\n");
 
         agregarCambio(cambios, "Nombre", profesorSeleccionado.getNombre(), nombreNuevo);
@@ -369,14 +365,12 @@ public class VtnPrincipalController implements Initializable
                 profesorSeleccionado.isActivo() ? "Activo" : "Inactivo",
                 activoNuevo ? "Activo" : "Inactivo");
 
-        // Si no hubo cambios
         if (cambios.toString().equals("Cambios detectados:\n\n"))
         {
             mostrarAlerta("Sin cambios", "No modificaste ningún dato.");
             return;
         }
 
-        // 7) Confirmación
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmar modificación");
         alert.setHeaderText("¿Deseas modificar este profesor?");
@@ -387,14 +381,12 @@ public class VtnPrincipalController implements Initializable
             return;
         }
 
-        // 8) Aplicar cambios reales
         profesorSeleccionado.setNombre(nombreNuevo);
         profesorSeleccionado.setApellidoP(apellidoPNuevo);
         profesorSeleccionado.setApellidoM(apellidoMNuevo);
         profesorSeleccionado.setIdentificador(identificadorNuevo);
         profesorSeleccionado.setActivo(activoNuevo);
 
-        // 9) Guardar en BD
         ProfesorDAOImpl dao = new ProfesorDAOImpl();
         dao.actualizarProfesor(profesorSeleccionado);
 
@@ -486,27 +478,32 @@ public class VtnPrincipalController implements Initializable
             return;
         }
 
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmar guardado");
+        confirm.setHeaderText("¿Deseas guardar las materias asignadas?");
+        confirm.setContentText("Una vez guardadas, no podrás modificarlas.");
+
+        if (confirm.showAndWait().get() != ButtonType.OK)
+            return;
+
         MateriaProfesorDAOImpl dao = new MateriaProfesorDAOImpl();
 
-        boolean okTotal = true;
-
         for (MateriasProfesorTemp m : materiasAsignadasTemp)
-        {
-            boolean ok = dao.insertar(profesorSeleccionadoId, m.getIdMateria());
-            if (!ok)
-                okTotal = false;
-        }
+            dao.insertar(profesorSeleccionadoId, m.getIdMateria());
 
-        if (okTotal)
-            mostrarInfo("Materias guardadas correctamente.");
-        else
-            mostrarAlerta("Advertencia", "Algunas materias ya estaban asignadas o no se guardaron.");
+        mostrarInfo("Materias guardadas correctamente.");
 
         cargarMateriasProfesor(profesorSeleccionadoId);
 
         agregarMateria.setDisable(true);
         guardarMaterias.setDisable(true);
+        eliminarMateria.setDisable(true);
+
+        comboCarreras.getSelectionModel().clearSelection();
+        comboSemestres.getSelectionModel().clearSelection();
+        comboMaterias.getSelectionModel().clearSelection();
     }
+
 
 
     // ==========================================
@@ -627,19 +624,48 @@ public class VtnPrincipalController implements Initializable
 
             tablaMaterias.refresh();
 
-            // Bloquear registro porque ya tiene materias asignadas
             agregarMateria.setDisable(true);
             guardarMaterias.setDisable(true);
+            eliminarMateria.setDisable(true);
         }
         else
         {
             materiasAsignadasTemp.clear();
             tablaMaterias.refresh();
 
-            // Activar porque NO tiene registro
             agregarMateria.setDisable(false);
             guardarMaterias.setDisable(false);
+            eliminarMateria.setDisable(false);
         }
+    }
+
+    @FXML
+    private void eliminarMateria()
+    {
+
+        if (agregarMateria.isDisable() || guardarMaterias.isDisable())
+        {
+            mostrarAlerta("Acción no permitida", "No puedes eliminar materias después de guardarlas.");
+            return;
+        }
+
+        MateriasProfesorTemp seleccion = tablaMaterias.getSelectionModel().getSelectedItem();
+
+        if (seleccion == null) {
+            mostrarAlerta("Sin selección", "Seleccione una materia de la tabla para eliminarla.");
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmar eliminación");
+        confirm.setHeaderText("¿Deseas eliminar esta materia antes de guardar?");
+        confirm.setContentText("Materia: " + seleccion.getNombreMateria());
+
+        if (confirm.showAndWait().get() != ButtonType.OK)
+            return;
+
+        materiasAsignadasTemp.remove(seleccion);
+        tablaMaterias.refresh();
     }
 
 

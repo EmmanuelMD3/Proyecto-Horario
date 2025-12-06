@@ -78,17 +78,35 @@ public class MateriaProfesorDAOImpl
 
         } catch (SQLException e)
         {
-            // error 1062 = clave duplicada
             if (e.getErrorCode() == 1062)
             {
                 System.out.println("Materia duplicada para profesor, se omite insert.");
-                return true; // se considera OK porque ya existe
+                return true;
             }
 
             System.out.println("ERROR insertar() MateriaProfesor: " + e.getMessage());
             return false;
         }
     }
+
+    public boolean eliminar(int idProfesor, int idMateria)
+    {
+        String sql = "DELETE FROM materiasprofesor WHERE idProfesor = ? AND idMateria = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql))
+        {
+            ps.setInt(1, idProfesor);
+            ps.setInt(2, idMateria);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e)
+        {
+            System.out.println("ERROR eliminar MateriaProfesor: " + e.getMessage());
+            return false;
+        }
+    }
+
 
 
 }
