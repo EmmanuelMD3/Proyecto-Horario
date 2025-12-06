@@ -2,19 +2,21 @@ package modelo.entidades;
 
 public class Materias
 {
-    int idMateria;
-    String nombre;
-    int idSemestre;
-    int horas_semana;
+    private int idMateria;
+    private String nombre;
+    private int idCarrera;
+    private int idSemestre;
+    private int horas_semana;
 
     public Materias()
     {
     }
 
-    public Materias(int idMateria, String nombre, int idSemestre, int horas_semana)
+    public Materias(int idMateria, String nombre, int idCarrera, int idSemestre, int horas_semana)
     {
         this.idMateria = idMateria;
         this.nombre = nombre;
+        this.idCarrera = idCarrera;
         this.idSemestre = idSemestre;
         this.horas_semana = horas_semana;
     }
@@ -24,6 +26,16 @@ public class Materias
         this.idMateria = idMateria;
         this.nombre = nombre;
         this.horas_semana = horas_semana;
+    }
+
+    public int getIdCarrera()
+    {
+        return idCarrera;
+    }
+
+    public void setIdCarrera(int idCarrera)
+    {
+        this.idCarrera = idCarrera;
     }
 
     public int getIdMateria()
@@ -67,7 +79,8 @@ public class Materias
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return nombre;
     }
 

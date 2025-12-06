@@ -2,11 +2,11 @@ package modelo.entidades;
 
 public class Grupos
 {
-    int idGrupo;
-    String nombre;
-    int idSemetre;
-    int idCiclo;
-    int idCarrera;
+    private int idGrupo;
+    private String nombre;
+    private int idCarrera;
+    private int idSemetre;
+    private int idCiclo;
 
     public Grupos()
     {

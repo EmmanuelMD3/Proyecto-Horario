@@ -76,12 +76,6 @@ public class Ciclos
     @Override
     public String toString()
     {
-        return "Ciclos{" +
-                "idCiclo=" + idCiclo +
-                ", nombre='" + nombre + '\'' +
-                ", tipo='" + tipo + '\'' +
-                ", fechaInicio=" + fechaInicio +
-                ", fechaFin=" + fechaFin +
-                '}';
+        return "Ciclos{" + "idCiclo=" + idCiclo + ", nombre='" + nombre + '\'' + ", tipo='" + tipo + '\'' + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin + '}';
     }
 }

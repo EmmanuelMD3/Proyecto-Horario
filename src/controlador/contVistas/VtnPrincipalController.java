@@ -3,6 +3,7 @@ package controlador.contVistas;
 import controlador.contLogica.HorarioControlador;
 import controlador.contLogica.HorarioVista;
 import dao.impl.*;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -13,76 +14,136 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import modelo.entidades.*;
+import modelo.secundarias.MateriasProfesorTemp;
+import pruebas.ProfesorMateriaTemp;
 import util.Validadores;
 
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class VtnPrincipalController implements Initializable {
+public class VtnPrincipalController implements Initializable
+{
+    // ==========================================
+    // VARIABLES
+    // ==========================================
 
-    // ==========================
-    //   CAMPOS FXML
-    // ==========================
-
-    @FXML private ComboBox<String> comboEstado;
-    @FXML private TextField txtNombre;
-    @FXML private TextField txtApellidoPaterno;
-    @FXML private TextField txtApellidoMaterno;
-    @FXML private TextField txtIdentificador;
-    @FXML private CheckBox checkAsignar;
-    @FXML private CheckBox checkNoAsignar;
-
-    @FXML private TableView<Profesores> tblBuscar;
-    @FXML private TableColumn<Profesores, Integer> colId;
-    @FXML private TableColumn<Profesores, String> colNombre;
-    @FXML private TableColumn<Profesores, String> colApellidoPaterno;
-    @FXML private TableColumn<Profesores, String> colApellidoMaterno;
-    @FXML private TableColumn<Profesores, String> colIdentificador;
-    @FXML private TableColumn<Profesores, Boolean> colActivo;
-
-    @FXML private Tab tabProfesores;
-    @FXML private Button btnGuardarDisponibilidad;
-    @FXML private TextField txtBuscar;
-    @FXML private AnchorPane panelHorario;
-
-    @FXML private ComboBox<Carreras> comboCarreras;
-    @FXML private ComboBox<Semestres> comboSemestres;
-    @FXML private ComboBox<Materias> comboMaterias;
-
-    @FXML private TableView<ProfesorMateriaTemp> tablaMaterias;
-    @FXML private TableColumn<ProfesorMateriaTemp, String> colMateria;
-    @FXML private TableColumn<ProfesorMateriaTemp, String> colCarrera;
-    @FXML private TableColumn<ProfesorMateriaTemp, String> colSemestre;
-
+    private int profesorSeleccionadoId = -1;
     private Profesores profesorSeleccionado;
+
+    private ObservableList<MateriasProfesorTemp> materiasAsignadasTemp =
+            FXCollections.observableArrayList();
+
     private HorarioControlador horarioControlador;
 
-    // ==========================
-    //    MÉTODO INICIAL
-    // ==========================
+    // ==========================================
+    // FXML
+    // ==========================================
+
+    @FXML
+    private ComboBox<String> comboEstado;
+    @FXML
+    private TextField txtNombre;
+    @FXML
+    private TextField txtApellidoPaterno;
+    @FXML
+    private TextField txtApellidoMaterno;
+    @FXML
+    private TextField txtIdentificador;
+    @FXML
+    private CheckBox checkAsignar;
+    @FXML
+    private CheckBox checkNoAsignar;
+
+    @FXML
+    private TableView<Profesores> tblBuscar;
+    @FXML
+    private TableColumn<Profesores, Integer> colId;
+    @FXML
+    private TableColumn<Profesores, String> colNombre;
+    @FXML
+    private TableColumn<Profesores, String> colApellidoPaterno;
+    @FXML
+    private TableColumn<Profesores, String> colApellidoMaterno;
+    @FXML
+    private TableColumn<Profesores, String> colIdentificador;
+    @FXML
+    private TableColumn<Profesores, Boolean> colActivo;
+
+    @FXML
+    private Tab tabProfesores;
+    @FXML
+    private Button btnGuardarDisponibilidad;
+    @FXML
+    private TextField txtBuscar;
+    @FXML
+    private AnchorPane panelHorario;
+
+    @FXML
+    private ComboBox<Carreras> comboCarreras;
+    @FXML
+    private ComboBox<Semestres> comboSemestres;
+    @FXML
+    private ComboBox<Materias> comboMaterias;
+
+    @FXML
+    private TableView<MateriasProfesorTemp> tablaMaterias;
+
+
+    // ==========================================
+    // INICIALIZAR
+    // ==========================================
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-
+    public void initialize(URL url, ResourceBundle rb)
+    {
         inicializarFiltrosTexto();
         inicializarTablaProfesores();
         inicializarEventosTabla();
-        //inicializarCombos();
 
         cargarCarreras();
-
         inicializarCombos();
+        inicializarTablaAsignaciones();
     }
 
-    // ===============================
-    //  INICIALIZACIONES
-    // ===============================
+    // ==========================================
+    // INICIALIZAR TABLA DE MATERIAS TEMPORALES
+    // ==========================================
 
-    private void inicializarFiltrosTexto() {
-        txtIdentificador.textProperty().addListener((obs, oldText, newText) -> {
-            if (newText != null)
-                txtIdentificador.setText(newText.toUpperCase());
+    private void inicializarTablaAsignaciones()
+    {
+        TableColumn<MateriasProfesorTemp, String> colNo = new TableColumn<>("No.");
+        colNo.setCellValueFactory(c ->
+                new ReadOnlyStringWrapper(String.valueOf(
+                        materiasAsignadasTemp.indexOf(c.getValue()) + 1
+                ))
+        );
+
+        TableColumn<MateriasProfesorTemp, String> colMateria = new TableColumn<>("Materia");
+        colMateria.setCellValueFactory(c -> new ReadOnlyStringWrapper(c.getValue().getNombreMateria()));
+
+        TableColumn<MateriasProfesorTemp, String> colCarrera = new TableColumn<>("Carrera");
+        colCarrera.setCellValueFactory(c -> new ReadOnlyStringWrapper(c.getValue().getCarrera()));
+
+        TableColumn<MateriasProfesorTemp, String> colSemestre = new TableColumn<>("Semestre");
+        colSemestre.setCellValueFactory(c -> new ReadOnlyStringWrapper(
+                String.valueOf(c.getValue().getSemestre())
+        ));
+
+        tablaMaterias.getColumns().clear();
+        tablaMaterias.getColumns().addAll(colNo, colMateria, colCarrera, colSemestre);
+        tablaMaterias.setItems(materiasAsignadasTemp);
+    }
+
+    // ==========================================
+    // INICIALIZAR FILTROS Y TABLAS
+    // ==========================================
+
+    private void inicializarFiltrosTexto()
+    {
+        txtIdentificador.textProperty().addListener((obs, old, nuevo) ->
+        {
+            if (nuevo != null) txtIdentificador.setText(nuevo.toUpperCase());
         });
 
         Validadores.aplicarFiltroSoloLetras(txtNombre);
@@ -93,8 +154,8 @@ public class VtnPrincipalController implements Initializable {
         comboEstado.setValue("Seleccione una opción");
     }
 
-    private void inicializarTablaProfesores() {
-
+    private void inicializarTablaProfesores()
+    {
         colId.setCellValueFactory(new PropertyValueFactory<>("idProfesor"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colApellidoPaterno.setCellValueFactory(new PropertyValueFactory<>("apellidoP"));
@@ -102,22 +163,31 @@ public class VtnPrincipalController implements Initializable {
         colIdentificador.setCellValueFactory(new PropertyValueFactory<>("identificador"));
         colActivo.setCellValueFactory(new PropertyValueFactory<>("activo"));
 
-        tabProfesores.setOnSelectionChanged(event -> {
-            if (tabProfesores.isSelected()) {
+        tabProfesores.setOnSelectionChanged(event ->
+        {
+            if (tabProfesores.isSelected())
+            {
                 cargarProfesores();
                 cargarVistaHorario();
             }
         });
     }
 
-    private void inicializarEventosTabla() {
-
-        tblBuscar.setRowFactory(tv -> {
+    private void inicializarEventosTabla()
+    {
+        tblBuscar.setRowFactory(tv ->
+        {
             TableRow<Profesores> row = new TableRow<>();
 
-            row.setOnMouseClicked(event -> {
-                if (!row.isEmpty() && event.getClickCount() == 2) {
+            row.setOnMouseClicked(event ->
+            {
+                if (!row.isEmpty() && event.getClickCount() == 2)
+                {
                     profesorSeleccionado = row.getItem();
+                    profesorSeleccionadoId = profesorSeleccionado.getIdProfesor();  // ← AQUÍ
+
+                    System.out.println("Profesor seleccionado (doble clic): " + profesorSeleccionadoId);
+
                     cargarDatosEnFormulario(profesorSeleccionado);
                 }
             });
@@ -125,36 +195,46 @@ public class VtnPrincipalController implements Initializable {
             return row;
         });
 
-        tblBuscar.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
+        // ESTE LISTENER SÍ SE QUEDA COMO LO TIENES
+        tblBuscar.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) ->
+        {
             if (newSel == null) return;
 
-            int idProfesor = newSel.getIdProfesor();
+            // Esto funciona si seleccionas con 1 clic
+            profesorSeleccionadoId = newSel.getIdProfesor();
+            System.out.println("Profesor seleccionado (1 clic): " + profesorSeleccionadoId);
+
             DisponibilidadesDAOImpl dao = new DisponibilidadesDAOImpl();
-            List<Disponibilidades> lista = dao.obtenerPorProfesor(idProfesor);
+            List<Disponibilidades> lista = dao.obtenerPorProfesor(profesorSeleccionadoId);
 
             horarioControlador.mostrarDisponibilidadesProfesor(lista);
-
             btnGuardarDisponibilidad.setDisable(!lista.isEmpty());
             horarioControlador.setBloqueoEdicion(!lista.isEmpty());
         });
     }
 
-    private void inicializarCombos() {
 
-        comboCarreras.setOnAction(e -> {
-            Carreras c = comboCarreras.getValue();
-            if (c != null) cargarSemestres(c.getIdCarrera());
+    // ==========================================
+    // COMBOS
+    // ==========================================
+
+    private void inicializarCombos()
+    {
+        comboCarreras.setOnAction(e ->
+        {
+            cargarSemestres();
+            comboMaterias.getItems().clear();
         });
 
-        comboSemestres.setOnAction(e -> {
-            Semestres s = comboSemestres.getValue();
+        comboSemestres.setOnAction(e ->
+        {
             Carreras c = comboCarreras.getValue();
+            Semestres s = comboSemestres.getValue();
 
-            if (s != null && c != null)
+            if (c != null && s != null)
                 cargarMaterias(s.getIdSemestre(), c.getIdCarrera());
         });
     }
-
     // ===============================
     //  ACCIONES
     // ===============================
@@ -162,7 +242,8 @@ public class VtnPrincipalController implements Initializable {
     @FXML
     private void Aceptar()
     {
-        try {
+        try
+        {
 
             String nombre = txtNombre.getText().trim();
             String apellidoP = txtApellidoPaterno.getText().trim();
@@ -170,12 +251,14 @@ public class VtnPrincipalController implements Initializable {
             String identificador = txtIdentificador.getText().trim();
             String estadoTxt = comboEstado.getValue();
 
-            if (nombre.isEmpty() || apellidoP.isEmpty() || apellidoM.isEmpty() || identificador.isEmpty()) {
+            if (nombre.isEmpty() || apellidoP.isEmpty() || apellidoM.isEmpty() || identificador.isEmpty())
+            {
                 mostrarAlerta("Campos vacíos", "Por favor completa todos los campos.");
                 return;
             }
 
-            if (!identificador.matches("[A-Za-z0-9]+")) {
+            if (!identificador.matches("[A-Za-z0-9]+"))
+            {
                 mostrarAlerta("Identificador inválido", "Debe contener solo letras y números.");
                 return;
             }
@@ -186,7 +269,8 @@ public class VtnPrincipalController implements Initializable {
 
             ProfesorDAOImpl dao = new ProfesorDAOImpl();
 
-            if (dao.agregarProfesor(nuevo)) {
+            if (dao.agregarProfesor(nuevo))
+            {
                 mostrarAlerta("Éxito", "Profesor agregado correctamente.");
                 cargarProfesores();
                 limpiarCampos();
@@ -199,139 +283,20 @@ public class VtnPrincipalController implements Initializable {
         }
     }
 
-    @FXML
-    private void agregarMateria() {
-
-        if (profesorSeleccionado == null) {
-            mostrarAlerta("Seleccione profesor", "Debe seleccionar un profesor antes de asignar materias.");
-            return;
-        }
-
-        Carreras carrera = comboCarreras.getValue();
-        Semestres semestre = comboSemestres.getValue();
-        Materias materia = comboMaterias.getValue();
-
-        if (carrera == null || semestre == null || materia == null) {
-            mostrarAlerta("Campos incompletos", "Debe seleccionar carrera, semestre y materia.");
-            return;
-        }
-
-        ProfesorMateriaTemp registro = new ProfesorMateriaTemp(materia, carrera, semestre);
-
-        tablaMaterias.getItems().add(registro);
-    }
 
     @FXML
-    private void guardarDisponibilidad() {
+    private void guardarDisponibilidad()
+    {
 
         Profesores seleccionado = tblBuscar.getSelectionModel().getSelectedItem();
-        if (seleccionado == null) {
+        if (seleccionado == null)
+        {
             mostrarAlerta("Seleccione un profesor", "Debe seleccionar un profesor.");
             return;
         }
 
         horarioControlador.guardarSeleccionadas(seleccionado.getIdProfesor());
         btnGuardarDisponibilidad.setDisable(true);
-    }
-
-    // ===============================
-    //  CARGA DE DATOS
-    // ===============================
-
-    private void cargarProfesores() {
-
-        ProfesorDAOImpl dao = new ProfesorDAOImpl();
-
-        ObservableList<Profesores> lista = FXCollections.observableArrayList(dao.listarProfesores());
-
-        FilteredList<Profesores> filtro = new FilteredList<>(lista, p -> true);
-
-        txtBuscar.textProperty().addListener((obs, oldValue, newValue) -> {
-            filtro.setPredicate(p ->
-            {
-
-                if (newValue == null || newValue.isEmpty())
-                    return true;
-
-                String f = newValue.toLowerCase();
-
-                return p.getNombre().toLowerCase().contains(f)
-                        || p.getApellidoP().toLowerCase().contains(f)
-                        || p.getApellidoM().toLowerCase().contains(f)
-                        || p.getIdentificador().toLowerCase().contains(f);
-            });
-        });
-
-        SortedList<Profesores> ordenada = new SortedList<>(filtro);
-        ordenada.comparatorProperty().bind(tblBuscar.comparatorProperty());
-
-        tblBuscar.setItems(ordenada);
-    }
-
-    private void cargarVistaHorario()
-    {
-
-        try {
-            HorarioVista vista = new HorarioVista();
-            horarioControlador = new HorarioControlador(vista);
-
-            panelHorario.getChildren().setAll(vista.getRoot());
-
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    private void cargarDatosEnFormulario(Profesores profesor)
-    {
-
-        txtNombre.setText(profesor.getNombre());
-        txtApellidoPaterno.setText(profesor.getApellidoP());
-        txtApellidoMaterno.setText(profesor.getApellidoM());
-        txtIdentificador.setText(profesor.getIdentificador());
-        comboEstado.setValue(profesor.isActivo() ? "Activo" : "Inactivo");
-    }
-
-    private void cargarCarreras()
-    {
-        CarreraDAOImpl dao = new CarreraDAOImpl();
-        comboCarreras.getItems().setAll(dao.listarCarreras());
-    }
-
-    private void cargarSemestres(int idCarrera)
-    {
-        SemestreDAOImpl dao = new SemestreDAOImpl();
-        comboSemestres.getItems().setAll(dao.listarPorCarrera(idCarrera));
-    }
-
-    private void cargarMaterias(int idSemestre, int idCarrera)
-    {
-        MateriaDAOImpl dao = new MateriaDAOImpl();
-        comboMaterias.getItems().setAll(dao.listarPorSemestreYCarrera(idSemestre, idCarrera));
-    }
-
-    // ===============================
-    //  UTILIDADES
-    // ===============================
-
-    private void mostrarAlerta(String titulo, String mensaje)
-    {
-        Alert a = new Alert(Alert.AlertType.INFORMATION);
-        a.setTitle(titulo);
-        a.setHeaderText(null);
-        a.setContentText(mensaje);
-        a.showAndWait();
-    }
-
-    private void limpiarCampos()
-    {
-        txtNombre.clear();
-        txtApellidoPaterno.clear();
-        txtApellidoMaterno.clear();
-        txtIdentificador.clear();
-        checkAsignar.setSelected(false);
-        checkNoAsignar.setSelected(false);
     }
 
     @FXML
@@ -401,7 +366,8 @@ public class VtnPrincipalController implements Initializable {
         alert.setHeaderText("¿Deseas modificar este profesor?");
         alert.setContentText(cambios.toString());
 
-        if (alert.showAndWait().get() != ButtonType.OK) {
+        if (alert.showAndWait().get() != ButtonType.OK)
+        {
             return;
         }
 
@@ -432,10 +398,182 @@ public class VtnPrincipalController implements Initializable {
         }
     }
 
+    // ==========================================
+    // BOTÓN AGREGAR MATERIA
+    // ==========================================
+
+    @FXML
+    private void agregarMateria()
+    {
+        System.out.println("=== DEBUG AGREGAR MATERIA ===");
+        System.out.println("profesorSeleccionadoId = " + profesorSeleccionadoId);
+        System.out.println("Carrera = " + comboCarreras.getValue());
+        System.out.println("Semestre = " + comboSemestres.getValue());
+        System.out.println("Materia = " + comboMaterias.getValue());
+        System.out.println("Tamaño temporal antes = " + materiasAsignadasTemp.size());
+
+        if (profesorSeleccionadoId == -1)
+        {
+            mostrarAlerta("Error", "Seleccione un profesor antes de agregar materias.");
+            return;
+        }
+
+        Carreras carreraSel = comboCarreras.getValue();
+        Semestres semSel = comboSemestres.getValue();
+        Materias matSel = comboMaterias.getValue();
+
+        if (carreraSel == null || semSel == null || matSel == null)
+        {
+            mostrarAlerta("Error", "Seleccione carrera, semestre y materia.");
+            return;
+        }
+
+        for (MateriasProfesorTemp m : materiasAsignadasTemp)
+        {
+            if (m.getIdMateria() == matSel.getIdMateria())
+            {
+                mostrarAlerta("Error", "La materia ya está asignada.");
+                return;
+            }
+        }
+
+        materiasAsignadasTemp.add(new MateriasProfesorTemp(
+                matSel.getIdMateria(),
+                matSel.getNombre(),
+                carreraSel.getNombre(),
+                semSel.getNumero()
+        ));
+
+        tablaMaterias.refresh();
+
+        System.out.println("Materia agregada!");
+        System.out.println("Tamaño temporal después = " + materiasAsignadasTemp.size());
+
+    }
+
+    // ==========================================
+    // GUARDAR EN BD
+    // ==========================================
+
+    @FXML
+    private void guardarMaterias()
+    {
+        if (profesorSeleccionadoId == -1)
+        {
+            mostrarAlerta("Error", "Seleccione un profesor.");
+            return;
+        }
+
+        MateriaProfesorDAOImpl dao = new MateriaProfesorDAOImpl();
+
+        for (MateriasProfesorTemp m : materiasAsignadasTemp)
+            dao.insertar(profesorSeleccionadoId, m.getIdMateria());
+
+        mostrarInfo("Materias asignadas correctamente.");
+    }
+
+    // ==========================================
+    // CARGA DE DATOS
+    // ==========================================
+
+    private void cargarProfesores()
+    {
+        ProfesorDAOImpl dao = new ProfesorDAOImpl();
+        ObservableList<Profesores> lista =
+                FXCollections.observableArrayList(dao.listarProfesores());
+
+        FilteredList<Profesores> filtro = new FilteredList<>(lista, p -> true);
+
+        txtBuscar.textProperty().addListener((obs, old, nuevo) ->
+        {
+            filtro.setPredicate(p ->
+            {
+                if (nuevo == null || nuevo.isEmpty()) return true;
+
+                String f = nuevo.toLowerCase();
+                return p.getNombre().toLowerCase().contains(f)
+                        || p.getApellidoP().toLowerCase().contains(f)
+                        || p.getApellidoM().toLowerCase().contains(f)
+                        || p.getIdentificador().toLowerCase().contains(f);
+            });
+        });
+
+        SortedList<Profesores> ordenada = new SortedList<>(filtro);
+        ordenada.comparatorProperty().bind(tblBuscar.comparatorProperty());
+        tblBuscar.setItems(ordenada);
+    }
+
+    private void cargarVistaHorario()
+    {
+        try
+        {
+            HorarioVista vista = new HorarioVista();
+            horarioControlador = new HorarioControlador(vista);
+            panelHorario.getChildren().setAll(vista.getRoot());
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void cargarDatosEnFormulario(Profesores profesor)
+    {
+        txtNombre.setText(profesor.getNombre());
+        txtApellidoPaterno.setText(profesor.getApellidoP());
+        txtApellidoMaterno.setText(profesor.getApellidoM());
+        txtIdentificador.setText(profesor.getIdentificador());
+        comboEstado.setValue(profesor.isActivo() ? "Activo" : "Inactivo");
+    }
+
+    private void cargarCarreras()
+    {
+        CarreraDAOImpl dao = new CarreraDAOImpl();
+        comboCarreras.getItems().setAll(dao.listarCarreras());
+    }
+
+    private void cargarSemestres()
+    {
+        SemestreDAOImpl dao = new SemestreDAOImpl();
+        comboSemestres.getItems().setAll(dao.listarTodos());
+    }
+
+    private void cargarMaterias(int idSemestre, int idCarrera)
+    {
+        MateriaDAOImpl dao = new MateriaDAOImpl();
+        comboMaterias.getItems().setAll(dao.listarPorSemestreYCarrera(idSemestre, idCarrera));
+    }
+
+    // ==========================================
+    // UTILIDADES
+    // ==========================================
+
+    private void mostrarAlerta(String titulo, String mensaje)
+    {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle(titulo);
+        a.setHeaderText(null);
+        a.setContentText(mensaje);
+        a.showAndWait();
+    }
+
+    private void mostrarInfo(String mensaje)
+    {
+        mostrarAlerta("Información", mensaje);
+    }
+
+    private void limpiarCampos()
+    {
+        txtNombre.clear();
+        txtApellidoPaterno.clear();
+        txtApellidoMaterno.clear();
+        txtIdentificador.clear();
+        checkAsignar.setSelected(false);
+        checkNoAsignar.setSelected(false);
+    }
+
     @FXML
     private void Cancelar()
     {
         limpiarCampos();
     }
-
 }

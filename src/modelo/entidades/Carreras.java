@@ -5,19 +5,17 @@ public class Carreras
     int idCarrera;
     String nombre;
     String clave;
-    String descripcion;
 
     public Carreras()
     {
 
     }
 
-    public Carreras(int idCarrera, String nombre, String clave, String descripcion)
+    public Carreras(int idCarrera, String nombre, String clave)
     {
         this.idCarrera = idCarrera;
         this.nombre = nombre;
         this.clave = clave;
-        this.descripcion = descripcion;
     }
 
     public Carreras(int idCarrera, String nombre)
@@ -56,18 +54,9 @@ public class Carreras
         this.clave = clave;
     }
 
-    public String getDescripcion()
-    {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion)
-    {
-        this.descripcion = descripcion;
-    }
-
     @Override
-    public String toString() {
+    public String toString()
+    {
         return nombre;
     }
 }

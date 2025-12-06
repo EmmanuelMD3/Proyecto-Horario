@@ -16,7 +16,7 @@ public class TestProfesorDAO
 
         CicloDAOImpl dao = new CicloDAOImpl();
 
-        Ciclos nuevo = new Ciclos(0, "2025-A", "par",
+        Ciclos nuevo = new Ciclos(0, "2025-A", "Par",
                 Date.valueOf("2025-01-15"), Date.valueOf("2025-06-30"));
         dao.agregarCiclo(nuevo);
 

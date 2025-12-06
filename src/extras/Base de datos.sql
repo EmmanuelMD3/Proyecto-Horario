@@ -76,7 +76,6 @@ CREATE TABLE MateriasProfesor (
                                   idMatProf INT AUTO_INCREMENT PRIMARY KEY,
                                   idProfesor INT NOT NULL,
                                   idMateria INT NOT NULL,
-                                  preferencia INT DEFAULT 1, -- opcional para luego
                                   UNIQUE(idProfesor, idMateria),
                                   FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor) ON DELETE CASCADE,
                                   FOREIGN KEY (idMateria) REFERENCES Materias(idMateria) ON DELETE CASCADE
@@ -282,3 +281,252 @@ INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
 -- LICENCIATURA EN GESTION EMPRESARIAL
 -- SEMESTRE: 1
 -- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Fundamentos de Física',2,1,4),
+                                                                       ('Cálculo Diferencial e Integral',2,1,5),
+                                                                       ('Taller de Ética',2,1,4),
+                                                                       ('Fudamentos de Gestión Empresarial',2,1,5),
+                                                                       ('Fundamentos de Investigacion',2,1,3),
+                                                                       ('Probabilidad y Estadistica',2,1,5),
+                                                                       ('Ingles I',2,1,5);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- LICENCIATURA EN GESTION EMPRESARIAL
+-- SEMESTRE: 2
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Software de Aplicacion Ejecutivo',2,2,5),
+                                                                       ('Desarrollo Humano',2,2,4),
+                                                                       ('Contabilidad Orientada a los Negocios',2,2,5),
+                                                                       ('Dinamica Social',2,2,4),
+                                                                       ('Fundamentos de Quimica',2,2,5),
+                                                                       ('Legislacion Laboral',2,2,4),
+                                                                       ('Ingles II',2,2,5);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- LICENCIATURA EN GESTION EMPRESARIAL
+-- SEMESTRE: 3
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Marco Legal de las Organizacíones',2,3,4),
+                                                                       ('Ecónomia Empresarial',2,3,5),
+                                                                       ('Costos Empresariales',2,3,5),
+                                                                       ('Habílidades Directivas I',2,3,4),
+                                                                       ('Entorno Macroeconomico',2,3,5),
+                                                                       ('Álgebra Lineal',2,3,5),
+                                                                       ('Ingles III',2,3,5);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- LICENCIATURA EN GESTION EMPRESARIAL
+-- SEMESTRE: 4
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Ingeniería Economica',2,4,5),
+                                                                       ('Estadística Inferencial I',2,4,6),
+                                                                       ('Instrumentos de Presupuestación Empresarial',2,4,5),
+                                                                       ('Habílidades Directivas II',2,4,4),
+                                                                       ('Desarrollo Sustentable',2,4,5),
+                                                                       ('Investigación de Operaciones',2,4,5),
+                                                                       ('Ingles IV',2,4,5);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- LICENCIATURA EN GESTION EMPRESARIAL
+-- SEMESTRE: 5
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Finanzas en las Organizaciones',2,5,4),
+                                                                       ('Estadística Inferencial II',2,5,6),
+                                                                       ('Ingeniería de Procesos',2,5,5),
+                                                                       ('Gestion del Capital Humano',2,5,4),
+                                                                       ('Taller de Investigación I',2,5,4),
+                                                                       ('Mercadotecnia',2,5,5),
+                                                                       ('Ingles V',2,5,5);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- LICENCIATURA EN GESTION EMPRESARIAL
+-- SEMESTRE: 6
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Administracion de la Salud y Seguridad Ocupacional',2,6,5),
+                                                                       ('El Emprendedor y la Innovacion',2,6,4),
+                                                                       ('Gestion de la Producción I',2,6,4),
+                                                                       ('Diseño Organizacional',2,6,5),
+                                                                       ('Taller de Investigación II',2,6,4),
+                                                                       ('Sistema de Informacion de la Mercadotecnia',2,6,5),
+                                                                       ('Evaluacion del Desempeño Empresarial (Optativa I)',2,6,5),
+                                                                       ('Ingles VI',2,6,5);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- LICENCIATURA EN GESTION EMPRESARIAL
+-- SEMESTRE: 7
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Calidad Aplicada en la Gestión Empresarial',2,7,5),
+                                                                       ('Formulación y Evaluación de Proyectos',2,7,5),
+                                                                       ('Gestion de la Producción II',2,7,4),
+                                                                       ('Gestion Estrategica',2,7,5),
+                                                                       ('Comercio Electronico',2,7,4),
+                                                                       ('Estrategias para el Desarrollo de Empresas (Optativa II)',2,7,5),
+                                                                       ('Simulacion de Negocios (Optativa III)',2,7,5),
+                                                                       ('Ingles VII',2,7,5);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- LICENCIATURA EN GESTION EMPRESARIAL
+-- SEMESTRE: 8
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Cadenas de Suministro',2,8,5),
+                                                                       ('Plan de Negocios Internacionales (Optativa IV)',2,8,5),
+                                                                       ('Tablero de Control (Optativa V)',2,8,5),
+                                                                       ('Análisis Financiero Gerencial (Optativa VI)',2,8,5),
+                                                                       ('Control de la Gestion Empresarial (Optativa VII)',2,8,5),
+                                                                       ('Decisiones Financieras (Optativa VIII)',2,8,5),
+                                                                       ('Ingles Tecnico I',2,8,5);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- LICENCIATURA EN GESTION EMPRESARIAL
+-- SEMESTRE: 9
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Residencia Profesional',2,9,4),
+                                                                       ('Ingles Tecnico II',2,9,5);
+
+-- ================================================
+-- ================================================
+-- ================================================
+
+-- =========================================
+-- INSERTA MATERIAS
+-- INGENIERÍA EN MECÁNICA AUTOMOTRIZ
+-- SEMESTRE: 1
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Dibujo Asistido por Computadora',3,1,4),
+                                                                       ('Álgebra',3,1,5),
+                                                                       ('Probabilidad y Estadística para Ingeniería',3,1,6),
+                                                                       ('Fundamentos de Contabilidad',3,1,3),
+                                                                       ('Geometría Analitica y Trigonomtría',3,1,4),
+                                                                       ('Expresión Lectora y Escritura',3,1,3),
+                                                                       ('Indentidad y Cultural',3,1,3),
+                                                                       ('Actividades Deportivas, Sociales y Culturales',3,1,3);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- INGENIERÍA EN MECÁNICA AUTOMOTRIZ
+-- SEMESTRE: 2
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Electricidad y Magnetismo',3,2,4),
+                                                                       ('Álgebra Lineal',3,2,4),
+                                                                       ('Mecánica Estática',3,2,4),
+                                                                       ('Calculo Diferencial',3,2,5),
+                                                                       ('Fundamentos de Administracion para Ingenieros',3,2,4),
+                                                                       ('Metodologia de Investigación Cuantitativa',3,2,3),
+                                                                       ('Axiologia y Deontologia',3,2,3),
+                                                                       ('Ingles Remedial',3,2,6);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- INGENIERÍA EN MECÁNICA AUTOMOTRIZ
+-- SEMESTRE: 3
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Circuitos Eléctricos',3,3,4),
+                                                                       ('Cálculo Integral',3,3,4),
+                                                                       ('Mecánica Dinámica',3,3,5),
+                                                                       ('Cálculo Vectorial',3,3,4),
+                                                                       ('Química',3,3,4),
+                                                                       ('Metodología de Investigación Cualitativa',3,3,4),
+                                                                       ('Introduccion a la Ingeniería Atomotriz',3,3,3),
+                                                                       ('Inglés Elemental',3,3,6);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- INGENIERÍA EN MECÁNICA AUTOMOTRIZ
+-- SEMESTRE: 4
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Dibujo de Elementos Asistidos por Software',3,4,5),
+                                                                       ('Ecuaciones Diferenciales',3,4,4),
+                                                                       ('Metrologia y Normalizacion',3,4,5),
+                                                                       ('Métodos Numéricos',3,4,4),
+                                                                       ('Resistencia de Materiales',3,4,4),
+                                                                       ('Taller de Investigacion',3,4,4),
+                                                                       ('Derechos Humanos para la Convivencia Pacífica',3,4,3),
+                                                                       ('Inglés Elemental Superior',3,4,6);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- INGENIERÍA EN MECÁNICA AUTOMOTRIZ
+-- SEMESTRE: 5
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Fundamentos de Mecatrónica',3,5,4),
+                                                                       ('Termodinámica',3,5,4),
+                                                                       ('Análisis y Síntesis de Mecánismos',3,5,4),
+                                                                       ('Electrónica Automotriz',3,5,4),
+                                                                       ('Tecnología y Comportamiento de Materiales',3,5,4),
+                                                                       ('Tópicos de Tribología para Sistemas Automotrices',3,5,4),
+                                                                       ('Conservación Ambiental y Desarrollo Sustentable',3,5,3),
+                                                                       ('Inglés Preintermedio',3,5,6);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- INGENIERÍA EN MECÁNICA AUTOMOTRIZ
+-- SEMESTRE: 6
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Circuitos Neumáticos e Hidráulicos',3,6,4),
+                                                                       ('Transferencia de Calor',3,6,4),
+                                                                       ('Sistemas de Dirección, Suspensión y Frenos',3,6,4),
+                                                                       ('Electrónica Automotriz de Potencia',3,6,4),
+                                                                       ('Sistema de Encendido, Inyección y Auxiliares',3,6,4),
+                                                                       ('Motores de Explosión y Combustión Interna',3,6,4),
+                                                                       ('Inglés Intermedio',3,6,6);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- INGENIERÍA EN MECÁNICA AUTOMOTRIZ
+-- SEMESTRE: 7
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Vehículos Híbridos y Eléctricos',3,7,4),
+                                                                       ('Vibraciones Mecánicas',3,7,4),
+                                                                       ('Mecánica de Fluidos',3,7,4),
+                                                                       ('Sistema de Transmisión de Potencia',3,7,4),
+                                                                       ('Diseño y Selección de Elementos de Máquinas',3,7,4),
+                                                                       ('Semiario de Investigacion',3,7,4),
+                                                                       ('Visión Empresarial',3,7,3),
+                                                                       ('Inglés Intermedio Superior',3,7,6);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- INGENIERÍA EN MECÁNICA AUTOMOTRIZ
+-- SEMESTRE: 8
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+                                                                       ('Taller de Sistemas Inteligentes',3,8,4),
+                                                                       ('Planeación y Control de Proyectos',3,8,4),
+                                                                       ('Gestión y Calidad Automotriz',3,8,4),
+                                                                       ('Procesos de Ensamble Automotriz',3,8,4),
+                                                                       ('Procesos de Manufactura de Elementos Automotrices',3,8,4),
+                                                                       ('Laboratorio de Mantenimiento Automotriz',3,8,4),
+                                                                       ('Diseño de Producto',3,8,5),
+                                                                       ('Inglés Tecnico',3,8,6);
+
+-- =========================================
+-- INSERTA MATERIAS
+-- INGENIERÍA EN MECÁNICA AUTOMOTRIZ
+-- SEMESTRE: 9
+-- =========================================
+INSERT INTO Materias (nombre, idCarrera, idSemestre, horas_semana) VALUES
+    ('Residencia Profesional',3,9,4);
+

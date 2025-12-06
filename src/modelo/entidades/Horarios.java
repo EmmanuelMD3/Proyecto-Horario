@@ -2,31 +2,29 @@ package modelo.entidades;
 
 import java.sql.Date;
 
-public class Horarios_Generados
+public class Horarios
 {
     int idHorario;
     int idAsignacion;
-    int dia;
+    int idProfesor;
+    String dia;
     Date hora_inicio;
     Date hora_fin;
-    String aula;
-    int tipo_bloque;
-    int estado;
+    String tipo;
 
-    public Horarios_Generados()
+    public Horarios()
     {
     }
 
-    public Horarios_Generados(int idHorario, int idAsignacion, int dia, Date hora_inicio, Date hora_fin, int tipo_bloque, int estado, String aula)
+    public Horarios(int idHorario, int idAsignacion, int idProfesor, String dia, Date hora_inicio, Date hora_fin, String tipo)
     {
         this.idHorario = idHorario;
         this.idAsignacion = idAsignacion;
+        this.idProfesor = idProfesor;
         this.dia = dia;
         this.hora_inicio = hora_inicio;
         this.hora_fin = hora_fin;
-        this.tipo_bloque = tipo_bloque;
-        this.estado = estado;
-        this.aula = aula;
+        this.tipo = tipo;
     }
 
     public int getIdHorario()
@@ -49,12 +47,22 @@ public class Horarios_Generados
         this.idAsignacion = idAsignacion;
     }
 
-    public int getDia()
+    public int getIdProfesor()
+    {
+        return idProfesor;
+    }
+
+    public void setIdProfesor(int idProfesor)
+    {
+        this.idProfesor = idProfesor;
+    }
+
+    public String getDia()
     {
         return dia;
     }
 
-    public void setDia(int dia)
+    public void setDia(String dia)
     {
         this.dia = dia;
     }
@@ -79,48 +87,27 @@ public class Horarios_Generados
         this.hora_fin = hora_fin;
     }
 
-    public String getAula()
+    public String getTipo()
     {
-        return aula;
+        return tipo;
     }
 
-    public void setAula(String aula)
+    public void setTipo(String tipo)
     {
-        this.aula = aula;
-    }
-
-    public int getTipo_bloque()
-    {
-        return tipo_bloque;
-    }
-
-    public void setTipo_bloque(int tipo_bloque)
-    {
-        this.tipo_bloque = tipo_bloque;
-    }
-
-    public int getEstado()
-    {
-        return estado;
-    }
-
-    public void setEstado(int estado)
-    {
-        this.estado = estado;
+        this.tipo = tipo;
     }
 
     @Override
     public String toString()
     {
-        return "Horarios_Generados{" +
+        return "Horarios{" +
                 "idHorario=" + idHorario +
                 ", idAsignacion=" + idAsignacion +
-                ", dia=" + dia +
+                ", idProfesor=" + idProfesor +
+                ", dia='" + dia + '\'' +
                 ", hora_inicio=" + hora_inicio +
                 ", hora_fin=" + hora_fin +
-                ", aula='" + aula + '\'' +
-                ", tipo_bloque=" + tipo_bloque +
-                ", estado=" + estado +
+                ", tipo='" + tipo + '\'' +
                 '}';
     }
 }

@@ -1,4 +1,8 @@
-package modelo.entidades;
+package pruebas;
+
+import modelo.entidades.Carreras;
+import modelo.entidades.Materias;
+import modelo.entidades.Semestres;
 
 public class ProfesorMateriaTemp
 {

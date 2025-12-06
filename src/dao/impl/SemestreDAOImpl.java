@@ -17,15 +17,15 @@ public class SemestreDAOImpl
         conn = ConexionBD.conectar();
     }
 
-    public List<Semestres> listarPorCarrera(int idCarrera)
+    public List<Semestres> listarTodos()
     {
         List<Semestres> lista = new ArrayList<>();
 
-        String sql = "SELECT idSemestre, numero FROM Semestres WHERE idCarrera = ? ORDER BY numero";
+        String sql = "SELECT idSemestre, numero FROM Semestres ORDER BY numero";
 
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idCarrera);
-            ResultSet rs = ps.executeQuery();
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery())
+        {
 
             while (rs.next())
             {
@@ -36,10 +36,12 @@ public class SemestreDAOImpl
                 lista.add(s);
             }
 
-        } catch (SQLException e) {
+            System.out.println("[SemestreDAOImpl] Semestres encontrados: " + lista.size());
+
+        } catch (SQLException e)
+        {
             System.out.println("Error al listar semestres: " + e.getMessage());
         }
-
         return lista;
     }
 }

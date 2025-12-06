@@ -23,12 +23,11 @@ public class MateriaDAOImpl
         List<Materias> lista = new ArrayList<>();
 
         String sql = """
-            SELECT m.idMateria, m.nombre, m.horas_semana 
-            FROM Materias m
-            JOIN Semestres s ON m.idSemestre = s.idSemestre
-            WHERE m.idSemestre = ? AND s.idCarrera = ?
-            ORDER BY m.nombre
-        """;
+                    SELECT idMateria, nombre, horas_semana
+                    FROM Materias
+                    WHERE idSemestre = ? AND idCarrera = ?
+                    ORDER BY nombre
+                """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql))
         {
@@ -36,7 +35,8 @@ public class MateriaDAOImpl
             ps.setInt(2, idCarrera);
             ResultSet rs = ps.executeQuery();
 
-            while (rs.next()) {
+            while (rs.next())
+            {
                 Materias mat = new Materias(
                         rs.getInt("idMateria"),
                         rs.getString("nombre"),
@@ -45,10 +45,13 @@ public class MateriaDAOImpl
                 lista.add(mat);
             }
 
+            System.out.println("[MateriaDAOImpl] Materias encontradas: " + lista.size());
+
         } catch (SQLException e)
         {
             System.out.println("Error al listar materias: " + e.getMessage());
         }
         return lista;
     }
+
 }

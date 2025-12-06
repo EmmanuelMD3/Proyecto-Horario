@@ -18,6 +18,7 @@ public class CarreraDAOImpl
         conn = ConexionBD.conectar();
     }
 
+
     public List<Carreras> listarCarreras()
     {
         List<Carreras> lista = new ArrayList<>();
