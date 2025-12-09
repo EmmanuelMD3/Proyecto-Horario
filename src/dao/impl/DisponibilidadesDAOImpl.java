@@ -1,40 +1,31 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao.impl;
 
 import dao.interfaces.IDisponibilidadesDAO;
 import conexion.ConexionBD;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
-
 import modelo.entidades.Disponibilidades;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- *
- * @author chemo
- */
-public class DisponibilidadesDAOImpl implements IDisponibilidadesDAO
+public class DisponibilidadesDAOImpl
 {
-    private Connection conn;
 
     public DisponibilidadesDAOImpl()
     {
-        conn = ConexionBD.conectar();
+        // NO almacenar Connection aquí
     }
 
-    @Override
+    // ==============================================================
+    // GUARDAR DISPONIBILIDADES (INSERT BATCH)
+
     public boolean guardarDisponibilidades(List<Disponibilidades> lista)
     {
-        String sql = "INSERT INTO disponibilidades (idProfesor, dia, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql))
+        String sql = "INSERT INTO Disponibilidades (idProfesor, dia, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = ConexionBD.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql))
         {
 
             for (Disponibilidades d : lista)
@@ -57,38 +48,42 @@ public class DisponibilidadesDAOImpl implements IDisponibilidadesDAO
         }
     }
 
+    // ==============================================================
+    // OBTENER DISPONIBILIDAD POR PROFESOR
+
     public List<Disponibilidades> obtenerPorProfesor(int idProfesor)
     {
+
         List<Disponibilidades> lista = new ArrayList<>();
         String sql = "SELECT dia, hora_inicio, hora_fin FROM Disponibilidades WHERE idProfesor = ?";
 
-        try (Connection conn = ConexionBD.getConexion();
+        try (Connection conn = ConexionBD.conectar();
              PreparedStatement ps = conn.prepareStatement(sql))
         {
+
             ps.setInt(1, idProfesor);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next())
             {
-                String dia = rs.getString("dia");
+
+                // Convertimos TIME → "07:00"
                 String horaInicio = rs.getString("hora_inicio").substring(0, 5);
                 String horaFin = rs.getString("hora_fin").substring(0, 5);
 
-                Disponibilidades d = new Disponibilidades(
+                lista.add(new Disponibilidades(
                         idProfesor,
-                        dia,
+                        rs.getString("dia"),
                         horaInicio,
                         horaFin
-                );
-
-                lista.add(d);
+                ));
             }
 
         } catch (SQLException e)
         {
             System.err.println("Error al obtener disponibilidades: " + e.getMessage());
         }
+
         return lista;
     }
 }
-

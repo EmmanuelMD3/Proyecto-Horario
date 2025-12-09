@@ -10,11 +10,9 @@ import java.util.List;
 public class SemestreDAOImpl
 {
 
-    private Connection conn;
-
     public SemestreDAOImpl()
     {
-        conn = ConexionBD.conectar();
+        // ❌ No almacenar conexiones aquí
     }
 
     public List<Semestres> listarTodos()
@@ -23,17 +21,18 @@ public class SemestreDAOImpl
 
         String sql = "SELECT idSemestre, numero FROM Semestres ORDER BY numero";
 
-        try (PreparedStatement ps = conn.prepareStatement(sql);
+        // ✔ Abrimos conexión dentro del método
+        try (Connection conn = ConexionBD.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery())
         {
 
             while (rs.next())
             {
-                Semestres s = new Semestres(
+                lista.add(new Semestres(
                         rs.getInt("idSemestre"),
                         rs.getInt("numero")
-                );
-                lista.add(s);
+                ));
             }
 
             System.out.println("[SemestreDAOImpl] Semestres encontrados: " + lista.size());
@@ -42,6 +41,7 @@ public class SemestreDAOImpl
         {
             System.out.println("Error al listar semestres: " + e.getMessage());
         }
+
         return lista;
     }
 }

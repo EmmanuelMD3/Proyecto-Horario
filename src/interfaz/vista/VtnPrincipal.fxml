@@ -154,6 +154,7 @@
                                     <Font size="13.0" />
                                  </font>
                               </Label>
+                              <Button layoutX="1145.0" layoutY="189.0" mnemonicParsing="false" onAction="#generarHorario" prefHeight="25.0" prefWidth="179.0" text="Button" />
                            </children>
                         </Pane>
                      </children>

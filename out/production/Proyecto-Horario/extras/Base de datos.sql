@@ -84,26 +84,25 @@ CREATE TABLE MateriasProfesor (
 -- ============================================
 -- 4. HORAS DE DESCARGA
 -- ============================================
-
 CREATE TABLE Descargas (
                            idDescarga INT AUTO_INCREMENT PRIMARY KEY,
-                           nombre VARCHAR(120) NOT NULL,
-                           horas_semana INT NOT NULL CHECK(horas_semana BETWEEN 1 AND 10)
+                           nombre VARCHAR(120) NOT NULL
 );
+
 
 CREATE TABLE DescargaProfesor (
                                   idDescargaProfesor INT AUTO_INCREMENT PRIMARY KEY,
                                   idProfesor INT NOT NULL,
                                   idDescarga INT NOT NULL,
                                   horas_asignadas INT NOT NULL CHECK(horas_asignadas BETWEEN 1 AND 10),
-                                  FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor),
-                                  FOREIGN KEY (idDescarga) REFERENCES Descargas(idDescarga)
+                                  UNIQUE(idProfesor, idDescarga),
+                                  FOREIGN KEY (idProfesor) REFERENCES Profesores(idProfesor) ON DELETE CASCADE,
+                                  FOREIGN KEY (idDescarga) REFERENCES Descargas(idDescarga) ON DELETE CASCADE
 );
 
 -- ============================================
 -- 5. ASIGNACIONES Y HORARIOS GENERADOS
 -- ============================================
-
 CREATE TABLE Asignaciones (
                               idAsignacion INT AUTO_INCREMENT PRIMARY KEY,
                               idProfesor INT NOT NULL,
@@ -135,6 +134,14 @@ INSERT INTO Carreras (nombre, clave) VALUES
                                          ('Licenciatura en Psicología Industrial', 'LPI'),
                                          ('Ingeniería en Gestión Empresarial', 'IGE'),
                                          ('Ingeniería en Mecánica Automotriz', 'IMA');
+
+-- =========================================
+-- INSERTA HORAS DE DESCARGA
+-- =========================================
+INSERT INTO Descargas (nombre) VALUES
+                                   ('Coordinacion de Carrera'),
+                                   ('Apoyo Academico'),
+                                   ('Titulacion');
 
 -- =========================================
 -- INSERTA SEMESTRES

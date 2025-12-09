@@ -1,5 +1,7 @@
 package modelo.entidades;
 
+import java.sql.Time;
+
 public class Disponibilidades
 {
 

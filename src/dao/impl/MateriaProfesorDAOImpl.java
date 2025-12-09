@@ -1,27 +1,25 @@
 package dao.impl;
 
 import conexion.ConexionBD;
-import modelo.entidades.Materias;
+import modelo.entidades.MateriasProfesores;
 import modelo.secundarias.MateriasProfesorTemp;
+import modelo.entidades.Profesores;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MateriaProfesorDAOImpl
 {
 
-    private Connection conn;
-
     public MateriaProfesorDAOImpl()
     {
-        conn = ConexionBD.conectar();
+
     }
 
-
+    // ===============================
+    // LISTAR MATERIAS DE UN PROFESOR
+    // ===============================
     public List<MateriasProfesorTemp> listarMateriasPorProfesor(int idProfesor)
     {
         List<MateriasProfesorTemp> lista = new ArrayList<>();
@@ -32,16 +30,18 @@ public class MateriaProfesorDAOImpl
                     m.nombre AS materiaNombre,
                     c.nombre AS carreraNombre,
                     s.numero AS semestreNumero
-                FROM materiasprofesor mp
-                JOIN materias m ON mp.idMateria = m.idMateria
-                JOIN carreras c ON m.idCarrera = c.idCarrera
-                JOIN semestres s ON m.idSemestre = s.idSemestre
+                FROM MateriasProfesor mp
+                JOIN Materias m ON mp.idMateria = m.idMateria
+                JOIN Carreras c ON m.idCarrera = c.idCarrera
+                JOIN Semestres s ON m.idSemestre = s.idSemestre
                 WHERE mp.idProfesor = ?
                 ORDER BY s.numero, m.nombre
                 """;
 
-        try (PreparedStatement ps = conn.prepareStatement(sql))
+        try (Connection conn = ConexionBD.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql))
         {
+
             ps.setInt(1, idProfesor);
             ResultSet rs = ps.executeQuery();
 
@@ -63,21 +63,25 @@ public class MateriaProfesorDAOImpl
         return lista;
     }
 
-
+    // ===============================
+    // INSERTAR
+    // ===============================
     public boolean insertar(int idProfesor, int idMateria)
     {
-        String sql = "INSERT INTO materiasprofesor (idProfesor, idMateria) VALUES (?, ?)";
+        String sql = "INSERT INTO MateriasProfesor (idProfesor, idMateria) VALUES (?, ?)";
 
-        try (PreparedStatement ps = conn.prepareStatement(sql))
+        try (Connection conn = ConexionBD.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql))
         {
+
             ps.setInt(1, idProfesor);
             ps.setInt(2, idMateria);
-
             ps.executeUpdate();
             return true;
 
         } catch (SQLException e)
         {
+
             if (e.getErrorCode() == 1062)
             {
                 System.out.println("Materia duplicada para profesor, se omite insert.");
@@ -89,12 +93,17 @@ public class MateriaProfesorDAOImpl
         }
     }
 
+    // ===============================
+    // ELIMINAR
+    // ===============================
     public boolean eliminar(int idProfesor, int idMateria)
     {
-        String sql = "DELETE FROM materiasprofesor WHERE idProfesor = ? AND idMateria = ?";
+        String sql = "DELETE FROM MateriasProfesor WHERE idProfesor = ? AND idMateria = ?";
 
-        try (PreparedStatement ps = conn.prepareStatement(sql))
+        try (Connection conn = ConexionBD.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql))
         {
+
             ps.setInt(1, idProfesor);
             ps.setInt(2, idMateria);
 
@@ -107,6 +116,78 @@ public class MateriaProfesorDAOImpl
         }
     }
 
+    // ======================================
+    // BUSCAR PROFESORES ASIGNADOS A MATERIA
+    // ======================================
+    public List<Profesores> buscarProfesoresParaMateria(int idMateria)
+    {
 
+        List<Profesores> lista = new ArrayList<>();
+
+        String sql = """
+                SELECT p.idProfesor, p.nombre, p.apellidoP, p.apellidoM, p.identificador, p.activo
+                FROM MateriasProfesor mp
+                JOIN Profesores p ON mp.idProfesor = p.idProfesor
+                WHERE mp.idMateria = ?
+                """;
+
+        try (Connection conn = ConexionBD.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql))
+        {
+
+            ps.setInt(1, idMateria);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next())
+            {
+                Profesores p = new Profesores(
+                        rs.getInt("idProfesor"),
+                        rs.getString("nombre"),
+                        rs.getString("apellidoP"),
+                        rs.getString("apellidoM"),
+                        rs.getString("identificador"),
+                        rs.getBoolean("activo")
+                );
+                lista.add(p);
+            }
+
+        } catch (SQLException e)
+        {
+            System.out.println("Error buscarProfesoresParaMateria: " + e.getMessage());
+        }
+
+        return lista;
+    }
+
+    // ===============================
+    // LISTAR TODAS
+    // ===============================
+    public List<MateriasProfesores> listarTodas()
+    {
+        List<MateriasProfesores> lista = new ArrayList<>();
+
+        String sql = "SELECT idMatProf, idProfesor, idMateria FROM MateriasProfesor";
+
+        try (Connection conn = ConexionBD.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery())
+        {
+
+            while (rs.next())
+            {
+                lista.add(new MateriasProfesores(
+                        rs.getInt("idMatProf"),
+                        rs.getInt("idProfesor"),
+                        rs.getInt("idMateria")
+                ));
+            }
+
+        } catch (SQLException e)
+        {
+            System.out.println("Error al listar MateriasProfesor: " + e.getMessage());
+        }
+
+        return lista;
+    }
 
 }

@@ -3,6 +3,7 @@ package controlador.contVistas;
 import controlador.contLogica.HorarioControlador;
 import controlador.contLogica.HorarioVista;
 import dao.impl.*;
+import generador.motor.GeneradorHorarios;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -699,5 +700,11 @@ public class VtnPrincipalController implements Initializable
         tablaMaterias.refresh();
     }
 
+    @FXML
+    private void generarHorario()
+    {
+        GeneradorHorarios generador = new GeneradorHorarios();
+        generador.generarHorariosAutomaticos();
+    }
 
 }

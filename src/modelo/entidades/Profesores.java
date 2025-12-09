@@ -108,4 +108,13 @@ public class Profesores
     {
         return "Profesores{" + "idProfesor=" + idProfesor + ", nombre=" + nombre + ", apellidoP=" + apellidoP + ", apellidoM=" + apellidoM + ", identificador=" + identificador + ", activo=" + activo + '}';
     }
+
+    public int getDisponibilidadTotal()
+    {
+        // Este método solo se usará para priorizar profesores
+        // Puedes mejorarlo después para calcularlo desde DisponibilidadesDAO
+
+        return 40; // por ahora todos iguales
+    }
+
 }

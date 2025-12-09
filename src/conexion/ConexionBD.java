@@ -4,66 +4,43 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * Clase encargada de establecer y cerrar la conexión con la base de datos
- * MySQL.
- */
 public class ConexionBD
 {
 
-    private static Connection conexion = null;
+    private static Connection conn = null;
 
-    /**
-     * Método para conectar a la base de datos.
-     *
-     * @return Objeto Connection si la conexión fue exitosa, null si hubo error.
-     */
     public static Connection conectar()
     {
         try
         {
-            if (conexion == null || conexion.isClosed())
+            // Si nunca se creó o ya se cerró, la volvemos a abrir
+            if (conn == null || conn.isClosed())
             {
-                conexion = DriverManager.getConnection(
-                        ConfiguracionDB.getUrl(),
-                        ConfiguracionDB.USUARIO,
-                        ConfiguracionDB.CONTRASENIA
-                );
-                System.out.println("Conexion establecida con la base de datos " + ConfiguracionDB.BASE_DATOS);
+                String url = ConfiguracionDB.getUrl();
+                String user = ConfiguracionDB.USUARIO;
+                String pass = ConfiguracionDB.CONTRASENIA;
+
+                conn = DriverManager.getConnection(url, user, pass);
+                System.out.println("Conexion establecida con la base de datos ProyectoHorarios");
             }
         } catch (SQLException e)
         {
-            System.err.println("Error al conectar con la base de datos:");
-            System.err.println(e.getMessage());
+            System.err.println("Error al conectar con la BD: " + e.getMessage());
         }
-        return conexion;
+        return conn;
     }
 
-    /**
-     * Método para cerrar la conexión actual.
-     */
-    public static void cerrarConexion()
+    public static void cerrar()
     {
         try
         {
-            if (conexion != null && !conexion.isClosed())
+            if (conn != null && !conn.isClosed())
             {
-                conexion.close();
-                System.out.println("Conexion cerrada correctamente.");
+                conn.close();
             }
         } catch (SQLException e)
         {
-            System.err.println("Error al cerrar la conexión: " + e.getMessage());
+            System.err.println("Error al cerrar BD: " + e.getMessage());
         }
-    }
-
-    /**
-     * Devuelve la conexión actual sin volver a crearla.
-     *
-     * @return conexión activa o null si no está conectada.
-     */
-    public static Connection getConexion()
-    {
-        return conexion;
     }
 }

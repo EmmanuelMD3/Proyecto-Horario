@@ -1,6 +1,7 @@
 package dao.impl;
 
 import conexion.ConexionBD;
+import modelo.entidades.DescargaProfesor;
 import modelo.entidades.Descargas;
 
 import java.sql.Connection;
@@ -13,20 +14,22 @@ import java.util.List;
 public class DescargaProfesorDAOImpl
 {
 
-    private Connection conn;
-
     public DescargaProfesorDAOImpl()
     {
-        conn = ConexionBD.conectar();
+        // NO almacenar conexión aquí
     }
 
+    // ==========================================================
+    // LISTAR DESCARGAS (catálogo)
+    // ==========================================================
     public List<Descargas> listarDescargas()
     {
         List<Descargas> lista = new ArrayList<>();
 
         String sql = "SELECT idDescarga, nombre FROM Descargas ORDER BY nombre";
 
-        try (PreparedStatement ps = conn.prepareStatement(sql);
+        try (Connection conn = ConexionBD.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery())
         {
 
@@ -40,36 +43,77 @@ public class DescargaProfesorDAOImpl
 
         } catch (SQLException e)
         {
-            System.out.println("Error listarDescargas: " + e.getMessage());
+            System.err.println("Error listarDescargas: " + e.getMessage());
         }
 
         return lista;
     }
 
+    // ==========================================================
+    // INSERTAR DESCARGA ASIGNADA A PROFESOR
+    // ==========================================================
     public boolean insertar(int idProfesor, int idDescarga, int horas)
     {
+
         String sql = """
                 INSERT INTO DescargaProfesor (idProfesor, idDescarga, horas_asignadas)
                 VALUES (?, ?, ?)
                 """;
 
-        try (PreparedStatement ps = conn.prepareStatement(sql))
+        try (Connection conn = ConexionBD.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql))
         {
+
             ps.setInt(1, idProfesor);
             ps.setInt(2, idDescarga);
             ps.setInt(3, horas);
+
             ps.executeUpdate();
             return true;
 
         } catch (SQLException e)
         {
+
             if (e.getErrorCode() == 1062)
             {
-                System.out.println("Descarga duplicada, saltando...");
+                System.out.println("Descarga duplicada (ya asignada). Saltando...");
                 return true;
             }
-            System.out.println("ERROR insertar descarga: " + e.getMessage());
+
+            System.err.println("ERROR insertar descarga: " + e.getMessage());
             return false;
         }
+    }
+
+    // ==========================================================
+    // LISTAR TODAS LAS DESCARGAS ASIGNADAS
+    // ==========================================================
+    public List<DescargaProfesor> listarTodas()
+    {
+        List<DescargaProfesor> lista = new ArrayList<>();
+
+        String sql = "SELECT * FROM DescargaProfesor";
+
+        try (Connection conn = ConexionBD.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery())
+        {
+
+            while (rs.next())
+            {
+                lista.add(new DescargaProfesor(
+                        rs.getInt("idDescargaProfesor"),
+                        rs.getInt("idProfesor"),
+                        rs.getInt("idDescarga"),
+                        rs.getInt("horas_asignadas")
+                ));
+            }
+
+        } catch (SQLException e)
+        {
+            System.err.println("Error listarTodas DescargaProfesor: " + e.getMessage());
+        }
+
+        return lista;
     }
 }
