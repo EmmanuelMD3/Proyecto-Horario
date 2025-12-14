@@ -6,6 +6,7 @@
             <name>ProyectoHorario</name>
             <source-roots>
                 <root id="src.dir"/>
+                <root id="src.Resources.dir"/>
             </source-roots>
             <test-roots>
                 <root id="test.src.dir"/>

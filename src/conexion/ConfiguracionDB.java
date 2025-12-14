@@ -7,10 +7,10 @@ package conexion;
 public class ConfiguracionDB
 {
     public static final String HOST = "localhost";
-    public static final String PUERTO = "3306";
+    public static final String PUERTO = "3307";
     public static final String BASE_DATOS = "ProyectoHorarios";
     public static final String USUARIO = "root";
-    public static final String CONTRASENIA = "Emmanuel360#";
+    public static final String CONTRASENIA = "Guri08Khyes";
     public static String getUrl()
     {
         return "jdbc:mysql://" + HOST + ":" + PUERTO + "/" + BASE_DATOS

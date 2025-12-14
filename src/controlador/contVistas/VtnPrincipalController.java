@@ -1,6 +1,7 @@
 package controlador.contVistas;
 
 import controlador.contLogica.HorarioControlador;
+import controlador.contLogica.HorarioGrupal;
 import controlador.contLogica.HorarioVista;
 import dao.impl.*;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -21,6 +22,7 @@ import util.Validadores;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
 
 public class VtnPrincipalController implements Initializable
 {
@@ -94,8 +96,10 @@ public class VtnPrincipalController implements Initializable
     private Button guardarMaterias;
     @FXML
     private Button eliminarMateria;
-
-
+    
+    @FXML
+    private Button btnGenerarHorario;
+    
     // ==========================================
     // INICIALIZAR
     // ==========================================
@@ -403,6 +407,28 @@ public class VtnPrincipalController implements Initializable
                     .append(":\n   • Antes: ").append(viejo)
                     .append("\n   • Ahora:  ").append(nuevo)
                     .append("\n\n");
+        }
+    }
+    
+    
+    @FXML
+    private void handleGenerarHorario(ActionEvent event) {
+        try {
+            HorarioGrupal.generarHorarioCompleto();
+            
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Éxito");
+            alert.setHeaderText(null);
+            alert.setContentText("El horario ha sido generado correctamente y guardado como 'Horarios Grupales Finales.xlsx'.");
+            alert.showAndWait();
+
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Fallo en la generación del horario.");
+            alert.setContentText("Ocurrió un error al intentar generar el archivo Excel: " + e.getMessage());
+            e.printStackTrace();
+            alert.showAndWait();
         }
     }
 
