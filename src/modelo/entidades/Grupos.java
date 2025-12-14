@@ -2,23 +2,25 @@ package modelo.entidades;
 
 public class Grupos
 {
+
     private int idGrupo;
     private String nombre;
     private int idCarrera;
-    private int idSemetre;
+    private int idSemestre;
     private int idCiclo;
 
     public Grupos()
     {
     }
 
-    public Grupos(int idGrupo, String nombre, int idSemetre, int idCiclo, int idCarrera)
+    public Grupos(int idGrupo, String nombre,
+                  int idCarrera, int idSemestre, int idCiclo)
     {
         this.idGrupo = idGrupo;
         this.nombre = nombre;
-        this.idSemetre = idSemetre;
-        this.idCiclo = idCiclo;
         this.idCarrera = idCarrera;
+        this.idSemestre = idSemestre;
+        this.idCiclo = idCiclo;
     }
 
     public int getIdGrupo()
@@ -41,14 +43,24 @@ public class Grupos
         this.nombre = nombre;
     }
 
-    public int getIdSemetre()
+    public int getIdCarrera()
     {
-        return idSemetre;
+        return idCarrera;
     }
 
-    public void setIdSemetre(int idSemetre)
+    public void setIdCarrera(int idCarrera)
     {
-        this.idSemetre = idSemetre;
+        this.idCarrera = idCarrera;
+    }
+
+    public int getIdSemestre()
+    {
+        return idSemestre;
+    }
+
+    public void setIdSemestre(int idSemestre)
+    {
+        this.idSemestre = idSemestre;
     }
 
     public int getIdCiclo()
@@ -61,25 +73,9 @@ public class Grupos
         this.idCiclo = idCiclo;
     }
 
-    public int getIdCarrera()
-    {
-        return idCarrera;
-    }
-
-    public void setIdCarrera(int idCarrera)
-    {
-        this.idCarrera = idCarrera;
-    }
-
     @Override
     public String toString()
     {
-        return "Grupos{" +
-                "idGrupo=" + idGrupo +
-                ", nombre='" + nombre + '\'' +
-                ", idSemetre=" + idSemetre +
-                ", idCiclo=" + idCiclo +
-                ", idCarrera=" + idCarrera +
-                '}';
+        return nombre;
     }
 }

@@ -14,7 +14,7 @@ public class TestConexion
         if (conn != null)
         {
             System.out.println("Conexion verificada exitosamente.");
-            ConexionBD.cerrarConexion();
+            ConexionBD.conectar();
         } else
         {
             System.out.println("No se pudo establecer la conexión.");

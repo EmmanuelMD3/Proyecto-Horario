@@ -4,17 +4,15 @@ public class Descargas
 {
     private int idDescarga;
     private String nombre;
-    private int horas_semana;
 
     public Descargas()
     {
     }
 
-    public Descargas(int idDescarga, String nombre, int horas_semana)
+    public Descargas(int idDescarga, String nombre)
     {
         this.idDescarga = idDescarga;
         this.nombre = nombre;
-        this.horas_semana = horas_semana;
     }
 
     public int getIdDescarga()
@@ -37,23 +35,10 @@ public class Descargas
         this.nombre = nombre;
     }
 
-    public int getHoras_semana()
-    {
-        return horas_semana;
-    }
-
-    public void setHoras_semana(int horas_semana)
-    {
-        this.horas_semana = horas_semana;
-    }
 
     @Override
     public String toString()
     {
-        return "Descargas{" +
-                "idDescarga=" + idDescarga +
-                ", nombre='" + nombre + '\'' +
-                ", horas_semana=" + horas_semana +
-                '}';
+        return nombre;
     }
 }

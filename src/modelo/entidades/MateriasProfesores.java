@@ -19,6 +19,13 @@ public class MateriasProfesores
         Preferencia = preferencia;
     }
 
+    public MateriasProfesores(int idMatProf, int idProfesor, int idMateria)
+    {
+        this.idMatProf = idMatProf;
+        this.idProfesor = idProfesor;
+        this.idMateria = idMateria;
+    }
+
     public int getIdMatProf()
     {
         return idMatProf;

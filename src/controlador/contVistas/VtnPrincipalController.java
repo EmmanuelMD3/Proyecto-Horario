@@ -4,6 +4,7 @@ import controlador.contLogica.HorarioControlador;
 import controlador.contLogica.HorarioGrupal;
 import controlador.contLogica.HorarioVista;
 import dao.impl.*;
+import generador.motor.GeneradorHorarios;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +17,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import modelo.entidades.*;
 import modelo.secundarias.MateriasProfesorTemp;
-import pruebas.ProfesorMateriaTemp;
 import util.Validadores;
 
 import java.net.URL;
@@ -52,10 +52,6 @@ public class VtnPrincipalController implements Initializable
     private TextField txtApellidoMaterno;
     @FXML
     private TextField txtIdentificador;
-    @FXML
-    private CheckBox checkAsignar;
-    @FXML
-    private CheckBox checkNoAsignar;
 
     @FXML
     private TableView<Profesores> tblBuscar;
@@ -99,6 +95,13 @@ public class VtnPrincipalController implements Initializable
     
     @FXML
     private Button btnGenerarHorario;
+
+    @FXML
+    private ComboBox<Descargas> comboDescargas;
+
+    @FXML
+    private Spinner<Integer> spinnerHorasDescarga;
+
     
     // ==========================================
     // INICIALIZAR
@@ -114,11 +117,27 @@ public class VtnPrincipalController implements Initializable
         cargarCarreras();
         inicializarCombos();
         inicializarTablaAsignaciones();
+        inicializarSpinnerDescarga();
+        cargarDescargas();
     }
 
     // ==========================================
     // INICIALIZAR TABLA DE MATERIAS TEMPORALES
     // ==========================================
+    private void inicializarSpinnerDescarga()
+    {
+        SpinnerValueFactory<Integer> valueFactory =
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10, 1);
+
+        spinnerHorasDescarga.setValueFactory(valueFactory);
+    }
+
+    private void cargarDescargas()
+    {
+        DescargaProfesorDAOImpl dao = new DescargaProfesorDAOImpl();
+        comboDescargas.getItems().setAll(dao.listarDescargas());
+    }
+
 
     private void inicializarTablaAsignaciones()
     {
@@ -513,7 +532,6 @@ public class VtnPrincipalController implements Initializable
             return;
 
         MateriaProfesorDAOImpl dao = new MateriaProfesorDAOImpl();
-
         for (MateriasProfesorTemp m : materiasAsignadasTemp)
             dao.insertar(profesorSeleccionadoId, m.getIdMateria());
 
@@ -521,16 +539,35 @@ public class VtnPrincipalController implements Initializable
 
         cargarMateriasProfesor(profesorSeleccionadoId);
 
+        Descargas selDesc = comboDescargas.getValue();
+
+        if (selDesc != null)
+        {
+            int horas = spinnerHorasDescarga.getValue();
+
+            if (horas < 1)
+            {
+                mostrarAlerta("Error", "Las horas de descarga deben ser mínimo 1.");
+                return;
+            }
+
+            DescargaProfesorDAOImpl daoDesc = new DescargaProfesorDAOImpl();
+            daoDesc.insertar(profesorSeleccionadoId, selDesc.getIdDescarga(), horas);
+        }
+
         agregarMateria.setDisable(true);
         guardarMaterias.setDisable(true);
-        eliminarMateria.setDisable(true);
+        eliminarMateria.setDisable(true); // ← CORRECTO
 
         comboCarreras.getSelectionModel().clearSelection();
         comboSemestres.getSelectionModel().clearSelection();
         comboMaterias.getSelectionModel().clearSelection();
+
+        comboDescargas.getSelectionModel().clearSelection();
+        comboDescargas.setPromptText("Seleccione una descarga");
+
+        spinnerHorasDescarga.getValueFactory().setValue(1);
     }
-
-
 
     // ==========================================
     // CARGA DE DATOS
@@ -627,8 +664,6 @@ public class VtnPrincipalController implements Initializable
         txtApellidoPaterno.clear();
         txtApellidoMaterno.clear();
         txtIdentificador.clear();
-        checkAsignar.setSelected(false);
-        checkNoAsignar.setSelected(false);
     }
 
     @FXML
@@ -694,5 +729,11 @@ public class VtnPrincipalController implements Initializable
         tablaMaterias.refresh();
     }
 
+    @FXML
+    private void generarHorario()
+    {
+        GeneradorHorarios generador = new GeneradorHorarios();
+        generador.generarHorariosAutomaticos();
+    }
 
 }
