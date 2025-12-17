@@ -6,12 +6,12 @@
             <file>file:/C:/Users/Tatto/Downloads/Version1/Proyecto-Horario/src/dao/impl/HorarioReporteDAOImpl.java</file>
             <file>file:/C:/Users/Tatto/Downloads/Version1/Proyecto-Horario/src/dao/interfaces/IHorarioReporteDAO.java</file>
             <file>file:/C:/Users/Tatto/Downloads/Version1/Proyecto-Horario/src/controlador/contLogica/HorarioGrupalService.java</file>
-            <file>file:/C:/Users/Tatto/Downloads/Version1/Proyecto-Horario/src/modelo/secundarias/ReporteGrupoHorario.java</file>
             <file>file:/C:/Users/Tatto/Downloads/Version1/Proyecto-Horario/src/modelo/secundarias/ReporteGrupoCabecera.java</file>
             <file>file:/C:/Users/Tatto/Downloads/Version1/Proyecto-Horario/src/controlador/contLogica/HorarioGrupal.java</file>
             <file>file:/C:/Users/Tatto/Downloads/Version1/Proyecto-Horario/src/interfaz/vista/VtnPrincipal.fxml</file>
             <file>file:/C:/Users/Tatto/Downloads/Version1/Proyecto-Horario/src/interfaz/vista/Main.java</file>
             <file>file:/C:/Users/Tatto/Downloads/Version1/Proyecto-Horario/src/controlador/contVistas/VtnPrincipalController.java</file>
+            <file>file:/C:/Users/Tatto/Downloads/Version1/Proyecto-Horario/src/controlador/contLogica/HorarioVista.java</file>
         </group>
     </open-files>
 </project-private>

@@ -17,8 +17,7 @@ import org.apache.commons.compress.utils.IOUtils;
 
 import modelo.secundarias.ReporteGrupoCabecera;
 
-public class HorarioGrupal
-{
+public class HorarioGrupal {
 
     // Constantes de Diseño y Posición
     private static final String TITULO_ARCHIVO = "Horarios Grupales Finales";//Set para cambiar el titulo
@@ -57,7 +56,7 @@ public class HorarioGrupal
             e.printStackTrace();
         }
     }
-    
+
     //Main para pruebas de escritorio------
     /*
     public static void main(String[] args) throws IOException {
@@ -77,27 +76,26 @@ public class HorarioGrupal
         generador.createExcelFile(TITULO_ARCHIVO + ".xlsx", gruposConAsignaciones, service);
         System.out.println("--- Proceso finalizado ---");
     }
-    */
-    
+     */
     public void createExcelFile(String fileName, Map<Integer, List<ReporteGrupoCabecera>> gruposConAsignaciones,
             HorarioGrupalService service) throws IOException {
 
         XSSFWorkbook workbook = new XSSFWorkbook();
+
+        // 1. CREACIÓN DE ESTILOS
+        Map<String, CellStyle> styles = crearEstilos(workbook);
+
         for (Map.Entry<Integer, List<ReporteGrupoCabecera>> entry : gruposConAsignaciones.entrySet()) {
 
             List<ReporteGrupoCabecera> asignaciones = entry.getValue();
             Map<String, Map<LocalTime, String>> matrizHorario = construirMatrizContenido(asignaciones);
 
             ReporteGrupoCabecera cabecera = asignaciones.get(0);
-            int idGrupo = entry.getKey();
 
             XSSFSheet sheet = workbook.createSheet(cabecera.getNombreGrupo());
 
             // Desactiva vista de los bordes de los sheets
             sheet.setDisplayGridlines(false);
-
-            // 1. CREACIÓN DE ESTILOS
-            Map<String, CellStyle> styles = crearEstilos(workbook);
 
             // 2. INSERCIÓN DEL LOGO (Mockeado)
             insertarLogo(workbook, sheet);

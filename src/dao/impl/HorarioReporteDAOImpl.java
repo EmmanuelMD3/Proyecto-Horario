@@ -8,11 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import modelo.secundarias.ReporteDescargas;
 import modelo.secundarias.ReporteGrupoCabecera;
-
-import java.time.LocalTime;
-import java.sql.Time;
-import modelo.secundarias.ReporteGrupoHorario;
 
 public class HorarioReporteDAOImpl implements IHorarioReporteDAO {
 
@@ -87,48 +84,104 @@ public class HorarioReporteDAOImpl implements IHorarioReporteDAO {
     }
 
     @Override
-    public List<ReporteGrupoHorario> obtenerBloquesPorAsignacion(int idAsignacion) {
-        List<ReporteGrupoHorario> bloques = new ArrayList<>();
+    public List<ReporteGrupoCabecera> todasAsignacionesPorCiclo(int idCiclo) {
+
+        String sqlTodasAsignaciones = """
+             SELECT
+                 A.idAsignacion,
+                 A.idProfesor,
+                 G.idGrupo,
+                 C.nombre AS nombreCarrera,
+                 S.numero AS numeroSemestre,
+                 G.nombre AS nombreGrupo,
+                 M.nombre AS nombreMateria,
+                 M.horas_semana AS horasSemana,
+                 CONCAT(P.apellidoP, ' ', P.apellidoM, ' ', P.nombre) AS nombreProfesor,
+                 CONCAT(DATE_FORMAT(CI.fecha_inicio, '%y'), '-', DATE_FORMAT(CI.fecha_fin, '%y')) AS anioCicloConcatenado
+             FROM Grupos G
+             JOIN Carreras C ON G.idCarrera = C.idCarrera
+             JOIN Semestres S ON G.idSemestre = S.idSemestre
+             JOIN Asignaciones A ON G.idGrupo = A.idGrupo
+             JOIN Materias M ON A.idMateria = M.idMateria
+             JOIN Profesores P ON A.idProfesor = P.idProfesor
+             JOIN ciclos CI ON G.idCiclo = CI.idCiclo
+             WHERE G.idCiclo = ?
+             ORDER BY
+             P.idProfesor, G.idGrupo, M.nombre
+             """;
+
+        List<ReporteGrupoCabecera> listaDetalle = new ArrayList<>();
         ResultSet rs = null;
 
-        String sqlBloques = """
-            SELECT dia, hora_inicio, hora_fin, tipo 
-            FROM Horarios 
-            WHERE idAsignacion = ? 
-            ORDER BY FIELD(dia, 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'), hora_inicio
-        """;
+        try (PreparedStatement ps = conn.prepareStatement(sqlTodasAsignaciones)) {
 
-        try (PreparedStatement ps = conn.prepareStatement(sqlBloques)) {
-            ps.setInt(1, idAsignacion);
+            ps.setInt(1, idCiclo);
+
             rs = ps.executeQuery();
 
             while (rs.next()) {
-                ReporteGrupoHorario bloque = new ReporteGrupoHorario();
 
-                bloque.setDia(rs.getString("dia"));
+                ReporteGrupoCabecera detalle = new ReporteGrupoCabecera();
 
-                // Conversión de java.sql.Time a java.time.LocalTime
-                Time sqlTimeInicio = rs.getTime("hora_inicio");
-                if (sqlTimeInicio != null) {
-                    bloque.setHoraInicio(sqlTimeInicio.toLocalTime());
-                }
+                // Mapeo de IDs
+                detalle.setIdAsignacion(rs.getInt("idAsignacion"));
+                detalle.setIdProfesor(rs.getInt("idProfesor"));
+                detalle.setIdGrupo(rs.getInt("idGrupo"));
 
-                Time sqlTimeFin = rs.getTime("hora_fin");
-                if (sqlTimeFin != null) {
-                    bloque.setHoraFin(sqlTimeFin.toLocalTime());
-                }
+                // Mapeo de Cabecera y Nombres
+                detalle.setNombreCarrera(rs.getString("nombreCarrera"));
+                detalle.setNumeroSemestre(rs.getInt("numeroSemestre"));
+                detalle.setNombreGrupo(rs.getString("nombreGrupo"));
+                detalle.setNombreMateria(rs.getString("nombreMateria"));
+                detalle.setHorasSemana(rs.getInt("horasSemana"));
+                detalle.setNombreProfesor(rs.getString("nombreProfesor"));
+                detalle.setAnioCicloConcatenado(rs.getString("anioCicloConcatenado"));
 
-                // El campo 'nombreBloque' (si existe en tu modelo) puede ser un identificador del aula o el tipo.
-                // Aquí usamos 'tipo' como ejemplo.
-                bloque.setNombreBloque(rs.getString("tipo"));
-
-                bloques.add(bloque);
+                listaDetalle.add(detalle);
             }
 
         } catch (SQLException e) {
-            System.err.println("ERROR obtenerBloquesPorAsignacion(): " + e.getMessage());
+            System.err.println("ERROR todasAsignacionesPorCiclo(): " + e.getMessage());
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    System.err.println("Error al cerrar ResultSet: " + ex.getMessage());
+                }
+            }
         }
-        return bloques;
+
+        return listaDetalle;
+    }
+
+    @Override
+    public List<ReporteDescargas> obtenerDescargasPorDocente(int idProfesor) {
+        List<ReporteDescargas> lista = new ArrayList<>();
+        // Unimos la tabla de asignación (DescargaProfesor) con la de catálogo (Descargas)
+        String sql = """
+                SELECT 
+                   d.nombre, 
+                   dp.horas_asignadas 
+                FROM DescargaProfesor dp
+                JOIN Descargas d ON dp.idDescarga = d.idDescarga
+                WHERE dp.idProfesor = ?
+                """;
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idProfesor);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ReporteDescargas rd = new ReporteDescargas();
+                rd.setNombre(rs.getString("nombre"));
+                rd.setHoras(rs.getInt("horas_asignadas"));
+                lista.add(rd);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error en obtenerDescargasPorDocente: " + e.getMessage());
+        }
+        return lista;
     }
 
 }
