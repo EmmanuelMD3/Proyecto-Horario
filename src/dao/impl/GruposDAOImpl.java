@@ -9,15 +9,10 @@ import java.util.List;
 
 public class GruposDAOImpl
 {
-
-    // ❌ Eliminamos el Connection de clase
-    // private Connection conn;
-
     public GruposDAOImpl()
     {
-        // ❌ Ya no necesitamos abrir conexión aquí
-    }
 
+    }
     // ==========================================================
     // LISTAR TODOS LOS GRUPOS
     // ==========================================================

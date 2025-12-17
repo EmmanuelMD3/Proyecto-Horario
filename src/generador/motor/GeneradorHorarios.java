@@ -12,6 +12,12 @@ import java.util.*;
 
 public class GeneradorHorarios
 {
+    // ==========================================================
+    // CONFIG (IMPORTANTE)
+    // ==========================================================
+    private static final int START_HOUR = 7;   // 07:00
+    private static final int END_HOUR = 19;  // 19:00 (no incluido)
+    private static final int SLOTS_PER_DAY = END_HOUR - START_HOUR; // 12 slots: 7..18
 
     // ==============
     // DAOs
@@ -34,7 +40,7 @@ public class GeneradorHorarios
         Map<Integer, CalendarioProfesor> calendarios = construirCalendariosProfesores();
 
         // 2) Construir todas las tareas (materias + descargas)
-        List<TareaHorario> tareas = construirTareas(calendarios);
+        List<TareaHorario> tareas = construirTareas();
 
         // 3) Configurar el asignador con reglas
         AsignadorHorario asignador = new AsignadorHorario();
@@ -45,15 +51,14 @@ public class GeneradorHorarios
             asignador.agregarCalendario(cal);
         }
 
-        // registrar reglas de validación
         asignador.agregarRegla(new ReglaDisponibilidadProfesor());
         asignador.agregarRegla(new ReglaProfesorNoDuplicado());
-        asignador.agregarRegla(new ReglaGrupoLibre());
         asignador.agregarRegla(new ReglaLimiteHorario());
         asignador.agregarRegla(new ReglaLimiteHorasProfesor());
-        asignador.agregarRegla(new ReglaEvitarDosBloquesSeguidos());
-        //asignador.agregarRegla(new ReglaNoSabado());
-        // ReglaDuracionBloque es redundante si ya usas estaLibre en otras
+
+// DESACTIVADAS POR AHORA
+// asignador.agregarRegla(new ReglaGrupoLibre());
+// asignador.agregarRegla(new ReglaEvitarDosBloquesSeguidos());
 
         // 4) Asignar
         asignador.asignar(tareas);
@@ -61,7 +66,7 @@ public class GeneradorHorarios
         // 5) Guardar resultado en la BD
         guardarResultados(asignador.getTareasColocadas());
 
-        // Opcional: revisar tareas que no pudieron colocarse
+        // Reporte
         if (!asignador.getTareasFallidas().isEmpty())
         {
             System.out.println("Tareas NO asignadas: " + asignador.getTareasFallidas().size());
@@ -86,12 +91,14 @@ public class GeneradorHorarios
         {
             CalendarioProfesor cal = new CalendarioProfesor(prof);
 
-            // Primero marcamos TODO como no disponible, para usar solo lo que hay en la BD
+            // IMPORTANTE:
+            // Tu calendario trabaja con índices 0..11 (12 slots),
+            // NO con horas reales 7..18.
             for (int d = 0; d < 6; d++)
             {
-                for (int h = 7; h < 19; h++)   // 7–18
+                for (int slot = 0; slot < SLOTS_PER_DAY; slot++)
                 {
-                    cal.marcarNoDisponible(d, h);
+                    cal.marcarNoDisponible(d, slot);
                 }
             }
 
@@ -99,7 +106,7 @@ public class GeneradorHorarios
 
             for (Disponibilidades d : disp)
             {
-                int diaIndex = mapearDia(d.getDia()); // "Lunes" -> 0, etc.
+                int diaIndex = mapearDia(d.getDia());
 
                 int hIni = horaToInt(d.getHoraInicio());
                 int hFin = horaToInt(d.getHoraFin());
@@ -143,6 +150,7 @@ public class GeneradorHorarios
     {
         try
         {
+            // "07:00" -> 7
             return Integer.parseInt(horaStr.substring(0, 2));
         } catch (Exception e)
         {
@@ -154,46 +162,81 @@ public class GeneradorHorarios
     // ==========================================================
     // 2) CONSTRUIR TAREAS (CLASES + DESCARGAS)
     // ==========================================================
-    private List<TareaHorario> construirTareas(Map<Integer, CalendarioProfesor> calendarios)
+    private List<TareaHorario> construirTareas()
     {
         List<TareaHorario> tareas = new ArrayList<>();
 
+        // ============================
+        // 1) CLASES (MateriasProfesor)
+        // ============================
         List<MateriasProfesores> listaMatProf = daoMatProf.listarTodas();
+
         for (MateriasProfesores mp : listaMatProf)
         {
             Profesores profesor = daoProfesores.buscarPorId(mp.getIdProfesor());
             Materias materia = daoMaterias.buscarPorId(mp.getIdMateria());
 
-            if (profesor == null || materia == null)
-                continue;
+            if (profesor == null || materia == null) continue;
 
-            // 1 solo grupo por carrera + semestre (tu diseño)
             Grupos grupo = daoGrupos.buscarPorCarreraSemestre(
                     materia.getIdCarrera(),
                     materia.getIdSemestre()
             );
-
-            // Si no hay grupo, seguimos, pero puedes marcarlo como error
-            if (grupo == null)
-                continue;
+            if (grupo == null) continue;
 
             int horas = materia.getHoras_semana();
+            if (horas <= 0) continue;
 
-            // Aquí podrías descomponer en bloques de 2 + 1 si quieres,
-            // de momento creamos una tarea con la duración total.
-            TareaHorario tarea = new TareaHorario(
-                    TareaHorario.Tipo.CLASE,
-                    horas,
-                    profesor,
-                    grupo,
-                    materia,
-                    null
-            );
+            // 5 -> 2 + 2 + 1
+            // 4 -> 2 + 2
+            // 3 -> 2 + 1 (puede quedar 1+2 luego en asignación si lo decides)
+            // 2 -> 2
+            // 1 -> 1
+            List<Integer> bloques = new ArrayList<>();
+            if (horas >= 5)
+            {
+                bloques.add(2);
+                bloques.add(2);
+                bloques.add(horas - 4); // normalmente 1
+            }
+            else
+                if (horas == 4)
+                {
+                    bloques.add(2);
+                    bloques.add(2);
+                }
+                else
+                    if (horas == 3)
+                    {
+                        bloques.add(2);
+                        bloques.add(1);
+                    }
+                    else
+                        if (horas == 2)
+                        {
+                            bloques.add(2);
+                        }
+                        else
+                        {
+                            bloques.add(1);
+                        }
 
-            tareas.add(tarea);
+            for (int bloque : bloques)
+            {
+                tareas.add(new TareaHorario(
+                        TareaHorario.Tipo.CLASE,
+                        bloque,
+                        profesor,
+                        grupo,
+                        materia,
+                        null
+                ));
+            }
         }
 
-        // 2.2 Horas de descarga
+        // ============================
+        // 2) DESCARGAS
+        // ============================
         List<DescargaProfesor> listaDesc = daoDescProf.listarTodas();
 
         for (DescargaProfesor dp : listaDesc)
@@ -201,21 +244,20 @@ public class GeneradorHorarios
             Profesores profesor = daoProfesores.buscarPorId(dp.getIdProfesor());
             Descargas descarga = daoDescargas.buscarPorId(dp.getIdDescarga());
 
-            if (profesor == null || descarga == null)
-                continue;
+            if (profesor == null || descarga == null) continue;
 
             int horas = dp.getHoras_asignadas();
+            if (horas <= 0) continue;
 
-            TareaHorario tarea = new TareaHorario(
+            // Puedes dividir descarga si quieres, por ahora va como bloque total
+            tareas.add(new TareaHorario(
                     TareaHorario.Tipo.DESCARGA,
                     horas,
                     profesor,
-                    null,   // sin grupo
-                    null,   // sin materia
+                    null,
+                    null,
                     descarga
-            );
-
-            tareas.add(tarea);
+            ));
         }
 
         return tareas;
@@ -228,11 +270,21 @@ public class GeneradorHorarios
     {
         for (TareaHorario t : tareasColocadas)
         {
-            // Convertir int dia -> String "Lunes", etc.
             String diaStr = diaToString(t.getDia());
 
-            LocalTime inicio = LocalTime.of(t.getHoraInicio(), 0);
-            LocalTime fin = inicio.plusHours(t.getDuracion());
+            // OJO: t.getHoraInicio() es SLOT 0..11, hay que convertir a hora real
+            int horaRealInicio = START_HOUR + t.getHoraInicio();
+            int horaRealFin = horaRealInicio + t.getDuracion();
+
+            // Seguridad (no pasarse de 19:00)
+            if (horaRealInicio < START_HOUR) horaRealInicio = START_HOUR;
+            if (horaRealFin > END_HOUR) horaRealFin = END_HOUR;
+
+            if (t.getDuracion() <= 0)
+                continue;
+
+            LocalTime inicio = LocalTime.of(horaRealInicio, 0);
+            LocalTime fin = LocalTime.of(horaRealFin, 0);
 
             Time sqlInicio = Time.valueOf(inicio);
             Time sqlFin = Time.valueOf(fin);

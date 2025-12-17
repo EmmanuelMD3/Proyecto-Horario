@@ -17,7 +17,8 @@ import org.apache.commons.compress.utils.IOUtils;
 
 import modelo.secundarias.ReporteGrupoCabecera;
 
-public class HorarioGrupal {
+public class HorarioGrupal
+{
 
     // Constantes de Diseño y Posición
     private static final String TITULO_ARCHIVO = "Horarios Grupales Finales";//Set para cambiar el titulo

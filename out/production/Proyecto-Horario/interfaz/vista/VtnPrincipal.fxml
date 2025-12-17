@@ -22,7 +22,15 @@
          <tabs>
             <Tab text="Generar Horario">
                <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <!--Agregado por mi, no se como se manejara la logica del boton-->
+                    <children>
+                            <Button fx:id="btnGenerarHorario" 
+                                    layoutX="20.0" layoutY="20.0" 
+                                    mnemonicParsing="false" 
+                                    text="Generar Horario (Archivo Excel)"
+                                    onAction="#handleGenerarHorario" /> </children>
+                  </AnchorPane>
                </content>
             </Tab>
             <Tab fx:id="tabProfesores" text="Profesores">

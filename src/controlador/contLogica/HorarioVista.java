@@ -15,7 +15,7 @@ public class HorarioVista
 
     private final String[] dias =
     {
-        "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"
+        "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"
     };
 
     private final String[][] rangos =

@@ -12,7 +12,7 @@ public class SemestreDAOImpl
 
     public SemestreDAOImpl()
     {
-        // ❌ No almacenar conexiones aquí
+
     }
 
     public List<Semestres> listarTodos()
