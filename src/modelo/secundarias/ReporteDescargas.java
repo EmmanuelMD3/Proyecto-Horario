@@ -1,9 +1,13 @@
 package modelo.secundarias;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ReporteDescargas {
 
     private String nombre;
     private int horas;
+    private List<ReporteGrupoHorario> bloquesHorario = new ArrayList<>();
 
     public ReporteDescargas() {
 
@@ -28,5 +32,13 @@ public class ReporteDescargas {
 
     public void setHoras(int horas) {
         this.horas = horas;
+    }
+    
+    public List<ReporteGrupoHorario> getBloquesHorario() {
+        return bloquesHorario;
+    }
+
+    public void setBloquesHorario(List<ReporteGrupoHorario> bloquesHorario) {
+        this.bloquesHorario = bloquesHorario;
     }
 }

@@ -28,7 +28,7 @@
                             <Button fx:id="btnGenerarHorario" 
                                     layoutX="20.0" layoutY="20.0" 
                                     mnemonicParsing="false" 
-                                    text="Generar Horario (Archivo Excel)"
+                                    text="Generar Horario (Archivos Excel)"
                                     onAction="#handleGenerarHorario" /> </children>
                   </AnchorPane>
                </content>

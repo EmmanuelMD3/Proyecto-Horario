@@ -63,6 +63,12 @@ public class HorarioGrupalService {
 
             List<ReporteDescargas> listaDescargas = horarioDAO.obtenerDescargasPorDocente(idProfesor);
 
+            for (ReporteDescargas desc : listaDescargas) {
+                // BUSCAR LOS BLOQUES DE CADA DESCARGA (Donde el tipo en la BD es 'DESCARGA')
+                List<ReporteGrupoHorario> bloquesDesc = bloquesDAO.obtenerBloquesDescarga(idProfesor, desc.getNombre());
+                desc.setBloquesHorario(bloquesDesc);
+            }
+
             for (ReporteGrupoCabecera cabecera : asignacionesDelProfe) {
                 cabecera.setDescargas(listaDescargas);
             }

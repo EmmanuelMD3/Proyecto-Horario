@@ -12,7 +12,7 @@ import java.sql.Time;
 
 import modelo.secundarias.ReporteGrupoHorario;
 
-public class BloquesHorarioDAOImpl implements IBloquesHorarioDAO{
+public class BloquesHorarioDAOImpl implements IBloquesHorarioDAO {
 
     private Connection conn;
 
@@ -61,4 +61,44 @@ public class BloquesHorarioDAOImpl implements IBloquesHorarioDAO{
         }
         return bloques;
     }
+
+    @Override
+    public List<ReporteGrupoHorario> obtenerBloquesDescarga(int idProfesor, String nombreDescarga) {
+        List<ReporteGrupoHorario> bloques = new ArrayList<>();
+
+        String sql = """
+        SELECT dia, hora_inicio, hora_fin, tipo 
+        FROM Horarios 
+        WHERE idProfesor = ? AND tipo = 'DESCARGA'
+        ORDER BY FIELD(dia, 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'), hora_inicio
+    """;
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idProfesor);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ReporteGrupoHorario bloque = new ReporteGrupoHorario();
+                bloque.setDia(rs.getString("dia"));
+
+                Time sqlTimeInicio = rs.getTime("hora_inicio");
+                if (sqlTimeInicio != null) {
+                    bloque.setHoraInicio(sqlTimeInicio.toLocalTime());
+                }
+
+                Time sqlTimeFin = rs.getTime("hora_fin");
+                if (sqlTimeFin != null) {
+                    bloque.setHoraFin(sqlTimeFin.toLocalTime());
+                }
+
+                bloque.setNombreBloque(nombreDescarga);
+
+                bloques.add(bloque);
+            }
+        } catch (SQLException e) {
+            System.err.println("ERROR obtenerBloquesDescarga(): " + e.getMessage());
+        }
+        return bloques;
+    }
+
 }

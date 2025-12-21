@@ -1,10 +1,12 @@
 package controlador.contVistas;
 
 import controlador.contLogica.HorarioControlador;
+import controlador.contLogica.HorarioDocente;
 import controlador.contLogica.HorarioGrupal;
 import controlador.contLogica.HorarioVista;
 import dao.impl.*;
 import generador.motor.GeneradorHorarios;
+import java.io.IOException;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -434,19 +436,19 @@ public class VtnPrincipalController implements Initializable
     private void handleGenerarHorario(ActionEvent event) {
         try {
             HorarioGrupal.generarHorarioCompleto();
+            HorarioDocente.generarHorarioGrupal();
             
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Éxito");
             alert.setHeaderText(null);
-            alert.setContentText("El horario ha sido generado correctamente y guardado como 'Horarios Grupales Finales.xlsx'.");
+            alert.setContentText("El horario ha sido generado correctamente y guardado como 'HORARIO GRUPALES FINALES.xlsx'.\n y 'HORARIOS POR DOCENTE FINALES.xlsx'.");
             alert.showAndWait();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Fallo en la generación del horario.");
             alert.setContentText("Ocurrió un error al intentar generar el archivo Excel: " + e.getMessage());
-            e.printStackTrace();
             alert.showAndWait();
         }
     }
@@ -734,6 +736,7 @@ public class VtnPrincipalController implements Initializable
     {
         GeneradorHorarios generador = new GeneradorHorarios();
         generador.generarHorariosAutomaticos();
+        
     }
 
 }

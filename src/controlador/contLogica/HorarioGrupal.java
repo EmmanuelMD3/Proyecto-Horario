@@ -20,7 +20,7 @@ import modelo.secundarias.ReporteGrupoCabecera;
 public class HorarioGrupal {
 
     // Constantes de Diseño y Posición
-    private static final String TITULO_ARCHIVO = "Horarios Grupales Finales";//Set para cambiar el titulo
+    private static final String TITULO_ARCHIVO = "HORARIOS GRUPALES FINALES";//Set para cambiar el titulo
     private static final int FILA_INICIO_TABLA_ASIGNATURAS = 11;
     private int FILA_INICIO_TABLA_HORARIO; //Dinamico para modificarse dentro del metodo de la tabla asignaturas
     private int FILA_INICIO_PIEDEPAGINA; //Dinamico para modificarse dentro del metodo de la tabla horario
@@ -32,6 +32,12 @@ public class HorarioGrupal {
             LocalTime.of(11, 0), LocalTime.of(12, 0), LocalTime.of(13, 0), LocalTime.of(14, 0),
             LocalTime.of(15, 0), LocalTime.of(16, 0), LocalTime.of(17, 0), LocalTime.of(18, 0),
             LocalTime.of(19, 0), LocalTime.of(20, 0)
+    );
+
+    private static final Map<String, byte[]> COLORES_CARRERAS = Map.of(
+            "Ingeniería en Gestión Empresarial", new byte[]{(byte) 0, (byte) 176, (byte) 240}, // #00B0F0
+            "Ingeniería en Mecánica Automotriz", new byte[]{(byte) 197, (byte) 90, (byte) 17}, // #C55A11
+            "Licenciatura en Psicología Industrial", new byte[]{(byte) 146, (byte) 208, (byte) 80} // #92D050
     );
 
     public static void generarHorarioCompleto() {
@@ -53,7 +59,6 @@ public class HorarioGrupal {
 
         } catch (IOException e) {
             System.err.println("ERROR al generar el archivo Excel: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -94,6 +99,14 @@ public class HorarioGrupal {
 
             XSSFSheet sheet = workbook.createSheet(cabecera.getNombreGrupo());
 
+            //Asignación de colores
+            byte[] rgb = COLORES_CARRERAS.get(cabecera.getNombreCarrera());
+
+            if (rgb != null) {
+                XSSFColor colorTab = new XSSFColor(rgb, new DefaultIndexedColorMap());
+                sheet.setTabColor(colorTab);
+            }
+
             // Desactiva vista de los bordes de los sheets
             sheet.setDisplayGridlines(false);
 
@@ -112,7 +125,7 @@ public class HorarioGrupal {
             // 6. CUERPO DE HORARIOS
             crearTablaHorarios(sheet, styles, asignaciones, matrizHorario);
 
-            // 6. PieDelFormato
+            // 7. PieDelFormato
             creaPiedePagina(sheet, styles);
 
         }
@@ -257,6 +270,12 @@ public class HorarioGrupal {
         styleSubtitulo2.setAlignment(HorizontalAlignment.CENTER);
         styles.put("Subtitulo2", styleSubtitulo2);
 
+        // Subtítulo sin negrita al 8 a la izquierda
+        CellStyle styleSubtitulo3 = workbook.createCellStyle();
+        styleSubtitulo3.setFont(fontSubtitulo2);
+        styleSubtitulo3.setAlignment(HorizontalAlignment.LEFT);
+        styles.put("Subtitulo3", styleSubtitulo3);
+
         // Firma
         CellStyle styleFirma = workbook.createCellStyle();
         styleFirma.setFont(fontSubtitulo1);
@@ -264,13 +283,14 @@ public class HorarioGrupal {
         styleFirma.setBorderTop(BorderStyle.MEDIUM);
         styles.put("Firma", styleFirma);
 
-        // Encabezados de tabla
+        // Encabezados de tabla verde
         byte[] rgb = new byte[]{
             (byte) 150, // Red
             (byte) 190, // Green
             (byte) 90 // Blue
         };
 
+        // Encabezados de tabla gris
         byte[] rgbGris = new byte[]{
             (byte) 192, // Red
             (byte) 192, // Green
@@ -290,7 +310,7 @@ public class HorarioGrupal {
         Font nonegritas2 = workbook.createFont();
         nonegritas2.setFontHeightInPoints((short) 7);
 
-        //Encabezado para las 2 tablas
+        //Encabezado para la tabla 1
         XSSFColor xssfColor = new XSSFColor(rgb, null);
         CellStyle styleHeader = workbook.createCellStyle();
         styleHeader.setFont(negritas);
@@ -467,7 +487,7 @@ public class HorarioGrupal {
 
         Cell cellA8 = row6.createCell(4);
         cellA8.setCellValue(cabecera.getNombreCarrera().toUpperCase());//CONSTRUCTOR
-        cellA8.setCellStyle(styles.get("Subtitulo2"));
+        cellA8.setCellStyle(styles.get("Subtitulo3"));
         sheet.addMergedRegion(new CellRangeAddress(9, 9, 4, 11));
 
         Cell cellA9 = row6.createCell(15);
